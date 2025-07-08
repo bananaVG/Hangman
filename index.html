@@ -1,1 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles to ensure ASCII art formatting and overall layout */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Full viewport height */
+            margin: 0;
+            padding: 20px; /* Padding around the game container */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+        .game-container {
+            background-color: #ffffff; /* White background for the game box */
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            padding: 2.5rem; /* Increased padding */
+            text-align: center;
+            max-width: 500px; /* Max width for better readability on large screens */
+            width: 100%; /* Full width on smaller screens */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Space between sections */
+        }
+        .hangman-stage {
+            font-family: 'monospace', 'Courier New', Courier; /* Monospace for ASCII art */
+            white-space: pre; /* Preserve whitespace for ASCII art */
+            font-size: 0.9rem; /* Slightly smaller font for ASCII art */
+            line-height: 1; /* Tight line height for ASCII art */
+            color: #4a5568; /* Dark gray for the ASCII art */
+            background-color: #e2e8f0; /* Light background for the stage */
+            padding: 1rem;
+            border-radius: 0.75rem;
+            min-height: 150px; /* Ensure consistent height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .word-display {
+            font-size: 2.5rem; /* Larger font for the word */
+            font-weight: bold;
+            letter-spacing: 0.5rem; /* Space out letters */
+            color: #2d3748; /* Darker gray for the word */
+            margin-bottom: 1.5rem;
+        }
+        .message {
+            font-size: 1.1rem;
+            color: #4a5568;
+            min-height: 24px; /* Reserve space for messages */
+        }
+        .input-group {
+            display: flex;
+            gap: 0.75rem; /* Space between input and button */
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        .guess-input {
+            padding: 0.75rem 1rem;
+            border: 2px solid #cbd5e0; /* Light border */
+            border-radius: 0.75rem; /* Rounded input */
+            font-size: 1.1rem;
+            width: 100px; /* Fixed width for the input */
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s ease-in-out;
+        }
+        .guess-input:focus {
+            border-color: #4299e1; /* Blue border on focus */
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Button shadow */
+        }
+        .btn-primary {
+            background-color: #4299e1; /* Blue primary button */
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: #3182ce; /* Darker blue on hover */
+            transform: translateY(-1px); /* Slight lift */
+        }
+        .btn-primary:active:not(:disabled) {
+            background-color: #2b6cb0; /* Even darker on active */
+            transform: translateY(0);
+        }
+        .btn-secondary {
+            background-color: #a0aec0; /* Gray secondary button */
+            color: white;
+            border: none;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #718096; /* Darker gray on hover */
+            transform: translateY(-1px);
+        }
+        .btn-secondary:active:not(:disabled) {
+            background-color: #5b6e82;
+            transform: translateY(0);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="text-4xl font-extrabold text-gray-800 mb-4">Hangman</h1>
+
+        <!-- Hangman Stage Display -->
+        <pre id="hangman-stage" class="hangman-stage">
+  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========
+        </pre>
+
+        <!-- Word Display -->
+        <div id="word-display" class="word-display">_ _ _ _ _</div>
+
+        <!-- Message Area -->
+        <p id="message" class="message text-red-500"></p>
+
+        <!-- Input and Guess Button -->
+        <div class="input-group">
+            <input type="text" id="guess-input" maxlength="1" class="guess-input" placeholder="A-Z">
+            <button id="guess-button" class="btn btn-primary">Guess</button>
+        </div>
+
+        <!-- New Game Button -->
+        <button id="new-game-button" class="btn btn-secondary mt-4">New Game</button>
+    </div>
+
+    <script>
+        // Game variables
+        const stages = [
+            `
+  +---+
+  |   |
+  O   |
+ /|\\  |
+ / \\  |
+      |
+=========
+`,
+            `
+  +---+
+  |   |
+  O   |
+ /|\\  |
+ /    |
+      |
+=========
+`,
+            `
+  +---+
+  |   |
+  O   |
+ /|\\  |
+      |
+      |
+=========
+`,
+            `
+  +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========
+`,
+            `
+  +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========
+`,
+            `
+  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========
+`,
+            `
+  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========
+`
+        ];
+
+        const word_list = [
+            "apple", "baker", "chair", "dream", "earth", "fruit", "grape", "house",
+            "igloo", "jolly", "kite", "lemon", "mouse", "night", "ocean", "plant",
+            "queen", "river", "smile", "table", "union", "value", "water", "xenon",
+            "yacht", "zebra", "angel", "beach", "cloud", "dance", "eagle", "flame",
+            "ghost", "happy", "inked", "juice", "knife", "light", "music", "north",
+            "olive", "peach", "quiet", "robot", "snake", "train", "unity", "vocal",
+            "wagon", "x-ray", "young", "zesty", "awake", "brave", "crane", "doubt",
+            "early", "fancy", "giant", "hotel", "ivory", "jolly", "koala", "loyal",
+            "melon", "novel", "opera", "proud", "quest", "ready", "sunny", "tiger",
+            "under", "vivid", "worry", "xerox", "yummy", "crazy", "beard", "cabin",
+            "daisy", "empty", "feast", "grass", "hello", "ideas", "jumps", "kicks",
+            "lucky", "magic", "never", "owing", "party", "quick", "rusty", "sweet",
+            "today", "urban", "vowel", "write", "yells", "zones", "alarm", "brick",
+            "calm", "dwarf", "empty", "faint", "glove", "hairy", "irony", "jumps",
+            "kneel", "latch", "minus", "nerve", "oat", "paint", "quill", "roast",
+            "shade", "twist", "usher", "vest", "whisk", "yarn", "adorn", "bless",
+            "climb", "ditch", "enjoy", "flock", "greet", "hatch", "inner", "joust",
+            "knead", "leash", "mirth", "notch", "outer", "pouch", "quart", "round",
+            "sniff", "towel", "usual", "vague", "witty", "yawn", "alert", "bloom",
+            "crisp", "drill", "eager", "float", "grace", "haste", "itchy", "joint",
+            "knock", "lunar", "medal", "niece", "onion", "prism", "quilt", "rebel",
+            "stump", "tasty", "ultra", "vixen", "widen", "youth", "azure", "bingo",
+            "cider", "dizzy", "elbow", "fable", "gavel", "hilly", "index", "jumbo",
+            "kiosk", "liven", "motto", "niece", "organ", "pilot", "quack", "reach",
+            "silly", "trunk", "usher", "vivid", "wedge", "yacht", "zest"
+        ];
+
+        let lives;
+        let chosenWord;
+        let displayWord;
+        let guessedLetters;
+        let gameOver;
+
+        // DOM Elements
+        const hangmanStageEl = document.getElementById('hangman-stage');
+        const wordDisplayEl = document.getElementById('word-display');
+        const messageEl = document.getElementById('message');
+        const guessInputEl = document.getElementById('guess-input');
+        const guessButtonEl = document.getElementById('guess-button');
+        const newGameButtonEl = document.getElementById('new-game-button');
+
+        /**
+         * Initializes a new game by resetting all game variables and updating the UI.
+         */
+        function initializeGame() {
+            lives = 6;
+            chosenWord = word_list[Math.floor(Math.random() * word_list.length)];
+            displayWord = Array(chosenWord.length).fill('_');
+            guessedLetters = [];
+            gameOver = false;
+
+            // Reset UI elements
+            messageEl.textContent = '';
+            guessInputEl.value = '';
+            guessInputEl.disabled = false;
+            guessButtonEl.disabled = false;
+            guessInputEl.focus(); // Focus on input for immediate typing
+
+            updateGameDisplay();
+        }
+
+        /**
+         * Updates the game display based on the current game state.
+         * This includes the hangman stage, the word display, and any messages.
+         */
+        function updateGameDisplay() {
+            hangmanStageEl.textContent = stages[lives];
+            wordDisplayEl.textContent = displayWord.join(' ');
+
+            if (gameOver) {
+                guessInputEl.disabled = true;
+                guessButtonEl.disabled = true;
+                if (lives === 0) {
+                    messageEl.textContent = `You lose! The word was "${chosenWord.toUpperCase()}".`;
+                    messageEl.classList.remove('text-green-500');
+                    messageEl.classList.add('text-red-500');
+                } else {
+                    messageEl.textContent = 'You win!';
+                    messageEl.classList.remove('text-red-500');
+                    messageEl.classList.add('text-green-500');
+                }
+            } else {
+                messageEl.textContent = `Lives left: ${lives}`;
+                messageEl.classList.remove('text-red-500', 'text-green-500');
+                messageEl.classList.add('text-gray-600');
+            }
+        }
+
+        /**
+         * Handles a user's guess.
+         * @param {string} guess - The letter guessed by the user.
+         */
+        function handleGuess(guess) {
+            // Input validation
+            if (!guess || guess.length !== 1 || !/^[a-z]$/.test(guess)) {
+                messageEl.textContent = 'Please enter a single letter (A-Z).';
+                messageEl.classList.remove('text-green-500');
+                messageEl.classList.add('text-red-500');
+                return;
+            }
+
+            if (guessedLetters.includes(guess)) {
+                messageEl.textContent = `You've already guessed "${guess.toUpperCase()}". Try another letter.`;
+                messageEl.classList.remove('text-green-500');
+                messageEl.classList.add('text-red-500');
+                return;
+            }
+
+            guessedLetters.push(guess); // Add guess to the list of guessed letters
+
+            let correctGuess = false;
+            for (let i = 0; i < chosenWord.length; i++) {
+                if (chosenWord[i] === guess) {
+                    displayWord[i] = guess;
+                    correctGuess = true;
+                }
+            }
+
+            if (!correctGuess) {
+                lives--;
+                messageEl.textContent = `"${guess.toUpperCase()}" is not in the word. Lives left: ${lives}`;
+                messageEl.classList.remove('text-green-500');
+                messageEl.classList.add('text-red-500');
+            } else {
+                messageEl.textContent = `Good guess! Lives left: ${lives}`;
+                messageEl.classList.remove('text-red-500');
+                messageEl.classList.add('text-green-500');
+            }
+
+            // Check for game over conditions
+            if (lives === 0) {
+                gameOver = true;
+            } else if (!displayWord.includes('_')) {
+                gameOver = true;
+            }
+
+            updateGameDisplay();
+        }
+
+        // Event Listeners
+        guessButtonEl.addEventListener('click', () => {
+            const guess = guessInputEl.value.toLowerCase();
+            handleGuess(guess);
+            guessInputEl.value = ''; // Clear input after guess
+            guessInputEl.focus(); // Keep focus on input
+        });
+
+        guessInputEl.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent default form submission if any
+                guessButtonEl.click(); // Simulate a click on the guess button
+            }
+        });
+
+        newGameButtonEl.addEventListener('click', initializeGame);
+
+        // Initialize the game when the page loads
+        window.onload = initializeGame;
+    </script>
+</body>
+</html>
 
