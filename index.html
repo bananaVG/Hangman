@@ -534,7 +534,7 @@
          */
         function initializeGame() {
             stopTimer(); // Clear any existing timer
-            lives = 6;
+            lives = 5;
             chosenWord = word_list[Math.floor(Math.random() * word_list.length)];
             displayWord = Array(chosenWord.length).fill('_');
             guessedLetters = [];
