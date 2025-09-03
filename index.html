@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hangman Game</title>
-    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABz51ERAAAAAXNSR0IArs4c6QAAAyFJREFUWAdj/P//PwMhAwMDw4jC/0oG/v7+ZgYGBgYGJkYGBoY/f/5kYGBgYGBkYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBo+e+e++b+f58vO++z/V4Q==">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABz51ERAAAAAXNSR0IArs4c6QAAAyFJREFUWAdj/P//PwMhAwMDw4jC/0oG/v7+ZgYGBgYGJkYGBoY/f/5kYGBgYGBkYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBo+e+e++b+f58vO++z/V4Q==">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -36,4 +36,281 @@
             font-size: 0.9rem; /* Slightly smaller font for ASCII art */
             line-height: 1; /* Tight line height for ASCII art */
             color: #4a5568; /* Dark gray for the ASCII art */
-            background-color: #e
+            background-color: #e2e8f0; /* Light gray background for ASCII art */
+            padding: 1rem;
+            border-radius: 0.75rem;
+            min-height: 140px; /* Ensure consistent height */
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .word-display {
+            font-size: 2.5rem; /* Larger font size for the word */
+            font-weight: bold;
+            letter-spacing: 0.75rem; /* Increased letter spacing */
+            color: #2d3748; /* Darker text color */
+            margin-bottom: 1rem;
+            min-height: 50px;
+        }
+        .guess-area {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem; /* Space between input and button */
+            margin-top: 1rem;
+        }
+        .guess-input {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 2px solid #cbd5e0; /* Light gray border */
+            width: 60px; /* Fixed width for single letter */
+            text-align: center;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+        .guess-button {
+            background-color: #4c51bf; /* Indigo button */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .guess-button:hover {
+            background-color: #434190;
+        }
+        .message-display {
+            min-height: 25px; /* Consistent height for message area */
+            margin-top: 1rem;
+            font-size: 1.125rem;
+        }
+        .restart-button {
+            background-color: #38a169; /* Green button */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+            display: none; /* Initially hidden */
+        }
+        .restart-button:hover {
+            background-color: #2f855a;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 id="hangman-title" class="text-4xl font-bold text-gray-800 mb-2">Hangman Game</h1>
+        <h2 id="category-display" class="text-xl text-gray-700 font-semibold mb-4"></h2>
+
+        <pre id="hangman-stage" class="hangman-stage"></pre>
+
+        <p id="guessed-letters" class="text-gray-600 font-medium text-lg min-h-[28px]"></p>
+
+        <div class="flex-grow flex items-center justify-center">
+            <h3 id="word-display" class="word-display text-gray-800 font-extrabold tracking-widest"></h3>
+        </div>
+
+        <div class="guess-area">
+            <input type="text" id="guess-input" maxlength="1" class="guess-input focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="guess-button" class="guess-button">Guess</button>
+        </div>
+
+        <p id="message" class="message-display text-gray-700 font-medium"></p>
+        <button id="restart-button" class="restart-button">Play Again</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const wordDisplay = document.getElementById('word-display');
+            const hangmanStage = document.getElementById('hangman-stage');
+            const guessedLettersDisplay = document.getElementById('guessed-letters');
+            const guessInput = document.getElementById('guess-input');
+            const guessButton = document.getElementById('guess-button');
+            const messageDisplay = document.getElementById('message');
+            const restartButton = document.getElementById('restart-button');
+            const categoryDisplay = document.getElementById('category-display');
+            const hangmanTitle = document.getElementById('hangman-title');
+        
+            const wordCategories = {
+                'TECHNOLOGY': ['JAVASCRIPT', 'PYTHON', 'COMPUTER', 'WEBSITE', 'DATABASE', 'ALGORITHM', 'SOFTWARE'],
+                'FOOD': ['PIZZA', 'CHOCOLATE', 'BURRITO', 'SUSHI', 'SPAGHETTI', 'LASAGNA', 'CROISSANT'],
+                'ANIMALS': ['ELEPHANT', 'GIRAFFE', 'KANGAROO', 'PENGUIN', 'MONKEY', 'BUTTERFLY', 'DOLPHIN'],
+                'SUPERHEROES/SUPERVILLAINS': ['SPIDERMAN', 'SUPERMAN', 'THOR', 'IRONMAN', 'JOKER', 'BATMAN', 'VADER', 'FALCON', 'MYSTIQUE']
+            };
+        
+            let selectedWord = '';
+            let selectedCategory = '';
+            let guessedLetters = [];
+            let incorrectGuesses = 0;
+            const maxIncorrectGuesses = 6;
+        
+            const hangmanStages = [
+                `
+          +---+
+          |   |
+              |
+              |
+              |
+              |
+        =========`,
+                `
+          +---+
+          |   |
+          O   |
+              |
+              |
+              |
+        =========`,
+                `
+          +---+
+          |   |
+          O   |
+          |   |
+              |
+              |
+        =========`,
+                `
+          +---+
+          |   |
+          O   |
+         /|   |
+              |
+              |
+        =========`,
+                `
+          +---+
+          |   |
+          O   |
+         /|\\  |
+              |
+              |
+        =========`,
+                `
+          +---+
+          |   |
+          O   |
+         /|\\  |
+         /    |
+              |
+        =========`,
+                `
+          +---+
+          |   |
+          O   |
+         /|\\  |
+         / \\  |
+              |
+        =========`,
+            ];
+        
+            function initializeGame() {
+                const categories = Object.keys(wordCategories);
+                selectedCategory = categories[Math.floor(Math.random() * categories.length)];
+                const words = wordCategories[selectedCategory];
+                selectedWord = words[Math.floor(Math.random() * words.length)];
+        
+                guessedLetters = [];
+                incorrectGuesses = 0;
+                messageDisplay.textContent = '';
+                guessInput.disabled = false;
+                guessButton.disabled = false;
+                restartButton.style.display = 'none';
+                hangmanTitle.classList.remove('text-green-600', 'text-red-600');
+                
+                renderGame();
+            }
+        
+            function renderGame() {
+                categoryDisplay.textContent = `Category: ${selectedCategory}`;
+                renderWord();
+                renderHangman();
+                renderGuessedLetters();
+            }
+        
+            function renderWord() {
+                const wordHtml = selectedWord
+                    .split('')
+                    .map(letter => {
+                        return guessedLetters.includes(letter) ? letter : '_';
+                    })
+                    .join(' ');
+                wordDisplay.textContent = wordHtml;
+            }
+        
+            function renderHangman() {
+                hangmanStage.textContent = hangmanStages[incorrectGuesses];
+            }
+        
+            function renderGuessedLetters() {
+                guessedLettersDisplay.textContent = `Guessed letters: ${guessedLetters.join(', ')}`;
+            }
+        
+            function checkWinOrLoss() {
+                const wordProgress = selectedWord
+                    .split('')
+                    .map(letter => (guessedLetters.includes(letter) ? letter : '_'))
+                    .join('');
+        
+                if (wordProgress === selectedWord) {
+                    messageDisplay.textContent = '🎉 You win! 🎉';
+                    messageDisplay.classList.add('text-green-600', 'font-bold');
+                    hangmanTitle.classList.add('text-green-600');
+                    endGame();
+                } else if (incorrectGuesses >= maxIncorrectGuesses) {
+                    messageDisplay.textContent = `💀 You lose! The word was "${selectedWord}". 💀`;
+                    messageDisplay.classList.add('text-red-600', 'font-bold');
+                    hangmanTitle.classList.add('text-red-600');
+                    endGame();
+                }
+            }
+        
+            function endGame() {
+                guessInput.disabled = true;
+                guessButton.disabled = true;
+                restartButton.style.display = 'block';
+            }
+        
+            function handleGuess() {
+                const guess = guessInput.value.trim().toUpperCase();
+                guessInput.value = '';
+        
+                if (!guess || guess.length !== 1 || !/^[A-Z]$/.test(guess)) {
+                    messageDisplay.textContent = 'Please enter a single letter from A-Z.';
+                    return;
+                }
+        
+                if (guessedLetters.includes(guess)) {
+                    messageDisplay.textContent = `You already guessed "${guess}".`;
+                    return;
+                }
+        
+                guessedLetters.push(guess);
+        
+                if (selectedWord.includes(guess)) {
+                    messageDisplay.textContent = `Correct! "${guess}" is in the word.`;
+                    messageDisplay.classList.remove('text-red-600');
+                    messageDisplay.classList.add('text-green-600');
+                } else {
+                    incorrectGuesses++;
+                    messageDisplay.textContent = `Incorrect. "${guess}" is not in the word.`;
+                    messageDisplay.classList.remove('text-green-600');
+                    messageDisplay.classList.add('text-red-600');
+                }
+        
+                renderGame();
+                checkWinOrLoss();
+            }
+        
+            guessButton.addEventListener('click', handleGuess);
+            guessInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    handleGuess();
+                }
+            });
+            restartButton.addEventListener('click', initializeGame);
+        
+            initializeGame();
+        });
+    </script>
+</body>
+</html>
