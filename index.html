@@ -61,7 +61,6 @@
             font-size: 1.1rem;
             font-weight: bold;
             color: #6b7280; /* Neutral color for info */
-            margin-bottom: 1rem;
         }
         .input-group, .select-group {
             display: flex;
@@ -154,6 +153,10 @@
                     <option value="animals">Animals</option>
                     <option value="foods">Foods</option>
                     <option value="countries">Countries</option>
+                    <option value="gpu">GPUs</option>
+                    <option value="carBrands">Car Brands</option>
+                    <option value="phones">Phones</option>
+                    <option value="videoGames">Video Games</option>
                 </select>
             </div>
         </div>
@@ -169,6 +172,8 @@
 =========
             </pre>
 
+            <h2 id="topic-display" class="text-xl font-semibold text-gray-600 -mb-2"></h2>
+            
             <div id="timer-info" class="timer-info">Time Left: 60s</div>
 
             <div id="word-display" class="word-display">_ _ _ _ _</div>
@@ -262,46 +267,50 @@
                 animals: {
                     words: ["lion", "tiger", "bear", "snake", "eagle", "whale", "shark", "zebra", "koala", "penguin"],
                     hints: [
-                        "King of the jungle",
-                        "A large feline with stripes",
-                        "Hibernates in winter",
-                        "A legless reptile",
-                        "A large bird of prey",
-                        "Largest animal on Earth",
-                        "A fish known for its teeth",
-                        "A striped African equid",
-                        "An Australian marsupial",
-                        "A flightless bird that lives in Antarctica"
+                        "King of the jungle", "A large feline with stripes", "Hibernates in winter", "A legless reptile", "A large bird of prey",
+                        "Largest animal on Earth", "A fish known for its teeth", "A striped African equid", "An Australian marsupial", "A flightless bird that lives in Antarctica"
                     ]
                 },
                 foods: {
                     words: ["apple", "bread", "cheese", "pasta", "pizza", "sushi", "onion", "grape", "lemon", "honey"],
                     hints: [
-                        "A crunchy fruit, often red or green",
-                        "Made from flour and yeast",
-                        "A dairy product often paired with wine",
-                        "Italian noodles",
-                        "A dish with cheese and tomato sauce",
-                        "Japanese dish with rice and fish",
-                        "A bulb vegetable that makes you cry",
-                        "Small, round fruit in bunches",
-                        "A sour yellow citrus fruit",
-                        "A sweet, sticky liquid made by bees"
+                        "A crunchy fruit, often red or green", "Made from flour and yeast", "A dairy product often paired with wine", "Italian noodles", "A dish with cheese and tomato sauce",
+                        "Japanese dish with rice and fish", "A bulb vegetable that makes you cry", "Small, round fruit in bunches", "A sour yellow citrus fruit", "A sweet, sticky liquid made by bees"
                     ]
                 },
                 countries: {
                     words: ["canada", "brazil", "egypt", "japan", "india", "france", "mexico", "russia", "china", "australia"],
                     hints: [
-                        "Known for maple syrup and hockey",
-                        "Largest country in South America",
-                        "Home of the pyramids and the Sphinx",
-                        "The Land of the Rising Sun",
-                        "Known for the Taj Mahal and Bollywood",
-                        "Famous for the Eiffel Tower and cuisine",
-                        "Known for its tacos and sombreros",
-                        "The largest country in the world by area",
-                        "Has a Great Wall and a massive population",
-                        "A continent and a country known for kangaroos"
+                        "Known for maple syrup and hockey", "Largest country in South America", "Home of the pyramids and the Sphinx", "The Land of the Rising Sun", "Known for the Taj Mahal and Bollywood",
+                        "Famous for the Eiffel Tower and cuisine", "Known for its tacos and sombreros", "The largest country in the world by area", "Has a Great Wall and a massive population", "A continent and a country known for kangaroos"
+                    ]
+                },
+                gpu: {
+                    words: ["geforce", "radeon", "nvidia", "raytracing", "shader", "tensor", "vram", "amd", "overclock", "heatsink"],
+                    hints: [
+                        "NVIDIA's main line of consumer graphics cards", "AMD's primary brand for graphics cards", "The 'green team,' known for its RTX series", "A rendering technique for hyper-realistic lighting", "A program that tells the GPU how to draw pixels",
+                        "Specialized cores used for AI and deep learning", "The dedicated memory on a graphics card", "The 'red team,' a major GPU and CPU manufacturer", "Running a component faster than its rated speed", "The metal component that dissipates warmth from the chip"
+                    ]
+                },
+                carBrands: {
+                    words: ["toyota", "ford", "honda", "tesla", "bmw", "porsche", "ferrari", "volkswagen", "jeep", "subaru"],
+                    hints: [
+                        "A Japanese brand known for reliability and the Camry", "An American company famous for the Mustang and F-150", "Japanese manufacturer known for the Civic and Accord", "An American EV company led by Elon Musk", "German brand known as the 'Ultimate Driving Machine'",
+                        "German sports car maker famous for the 911", "Iconic Italian supercar brand with a prancing horse logo", "German for 'people's car,' makes the Golf", "American brand known for its rugged off-road vehicles", "Japanese brand known for all-wheel drive"
+                    ]
+                },
+                phones: {
+                    words: ["iphone", "android", "sSamsung", "pixel", "nokia", "motorola", "oneplus", "xiaomi", "blackberry", "huawei"],
+                    hints: [
+                        "Apple's iconic smartphone", "Google's open-source mobile operating system", "A South Korean giant known for its Galaxy series", "Google's own brand of smartphones", "A Finnish brand once famous for 'indestructible' phones",
+                        "American company that created the first mobile phone", "Known for its 'flagship killer' phones", "A major Chinese electronics brand", "Once famous for its physical keyboards and BBM", "A Chinese tech giant known for its P series phones"
+                    ]
+                },
+                videoGames: {
+                    words: ["minecraft", "fortnite", "zelda", "mario", "pokemon", "roblox", "tetris", "pacman", "overwatch", "eldenring"],
+                    hints: [
+                        "A sandbox game about placing blocks", "A popular battle royale game with a building mechanic", "Nintendo's fantasy series about the hero of Hyrule", "Nintendo's famous Italian plumber mascot", "A game about catching and training pocket monsters",
+                        "An online platform where users create and play games", "A classic puzzle game involving falling blocks", "An arcade classic about eating dots in a maze", "A team-based hero shooter from Blizzard", "A challenging open-world RPG by FromSoftware"
                     ]
                 }
             };
@@ -310,6 +319,7 @@
             const setupSection = document.getElementById('setup-section');
             const gameSection = document.getElementById('game-section');
             const topicSelect = document.getElementById('topic-select');
+            const topicDisplay = document.getElementById('topic-display');
             const hangmanStage = document.getElementById('hangman-stage');
             const timerInfo = document.getElementById('timer-info');
             const wordDisplay = document.getElementById('word-display');
@@ -332,9 +342,12 @@
 
             // Functions
             const startGame = () => {
-                const topic = topicSelect.value;
-                // Don't start if the value is the disabled default
-                if (!topic) return;
+                const topicValue = topicSelect.value;
+                if (!topicValue) return;
+                
+                // Display the selected topic's friendly name
+                const topicText = topicSelect.options[topicSelect.selectedIndex].text;
+                topicDisplay.textContent = `Topic: ${topicText}`;
 
                 // Reset game state
                 wrongGuesses = 0;
@@ -342,9 +355,9 @@
                 timeLeft = 60;
                 messageDisplay.textContent = '';
                 
-                // Choose a word
-                const wordList = topics[topic].words;
-                const hintList = topics[topic].hints;
+                // Get words and hints from the selected topic
+                const wordList = topics[topicValue].words;
+                const hintList = topics[topicValue].hints;
                 const randomIndex = Math.floor(Math.random() * wordList.length);
                 selectedWord = wordList[randomIndex].toUpperCase();
                 selectedHint = hintList[randomIndex];
@@ -355,7 +368,6 @@
                 guessInput.value = '';
                 guessInput.focus();
                 
-                // Enable buttons and input
                 guessButton.disabled = false;
                 guessInput.disabled = false;
                 hintButton.disabled = false;
@@ -446,8 +458,8 @@
                 clearInterval(timer);
                 gameSection.classList.add('hidden');
                 setupSection.classList.remove('hidden');
-                // Reset the topic selector to its default state
                 topicSelect.value = "";
+                topicDisplay.textContent = "";
             };
 
             // Event Listeners
