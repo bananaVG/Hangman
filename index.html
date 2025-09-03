@@ -28,7 +28,7 @@
             width: 100%; /* Full width on smaller screens */
             display: flex;
             flex-direction: column;
-            gap: 1.5rem; /* Space between sections */
+            gap: 1rem; /* Adjusted gap */
         }
         .hangman-stage {
             font-family: 'monospace', 'Courier New', Courier; /* Monospace for ASCII art */
@@ -49,13 +49,12 @@
             font-weight: bold;
             letter-spacing: 0.5rem; /* Space out letters */
             color: #2d3748; /* Darker gray for the word */
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
         .guessed-letters {
             font-size: 1rem;
             color: #6b7280;
             min-height: 20px;
-            margin-top: -1rem; /* Adjust spacing */
         }
         .timer-info {
             font-size: 1.1rem;
@@ -149,13 +148,13 @@
             display: flex;
             justify-content: center;
             gap: 1rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1 class="text-4xl font-extrabold text-gray-800 mb-4">Hangman</h1>
+        <h1 class="text-4xl font-extrabold text-gray-800">Hangman</h1>
 
         <div id="setup-section" class="flex flex-col gap-4">
             <div class="select-group">
@@ -173,29 +172,21 @@
         </div>
 
         <div id="game-section" class="hidden">
-            <pre id="hangman-stage" class="hangman-stage">
- +---+
- |   |
-     |
-     |
-     |
-     |
-=========
-            </pre>
+            <pre id="hangman-stage" class="hangman-stage"></pre>
 
-            <h2 id="topic-display" class="text-xl font-semibold text-gray-600 -mb-2"></h2>
+            <h2 id="topic-display" class="text-xl font-semibold text-gray-600"></h2>
             
-            <div id="timer-info" class="timer-info">Time Left: 60s</div>
+            <div id="timer-info" class="timer-info"></div>
 
-            <div id="word-display" class="word-display">_ _ _ _ _</div>
+            <div id="word-display" class="word-display"></div>
 
-            <div id="guessed-letters" class="guessed-letters">Guessed: </div>
+            <div id="guessed-letters" class="guessed-letters"></div>
 
             <p id="message" class="message text-red-500 font-semibold"></p>
 
             <div class="input-group">
                 <input type="text" id="guess-input" maxlength="1" class="guess-input" placeholder="A-Z">
-                <button id="guess-button" class="btn btn-primary">Guess</button>
+                <button id="guess-button" class="btn btn-primary">Guess Letter</button>
             </div>
             
             <div class="input-group">
@@ -349,7 +340,6 @@
             const wordGuessInput = document.getElementById('word-guess-input');
             const wordGuessButton = document.getElementById('word-guess-button');
 
-
             // Game State
             let selectedWord = '';
             let selectedHint = '';
@@ -441,7 +431,6 @@
                 }
 
                 if (guess === selectedWord) {
-                    // Fill in all letters to reveal the word and trigger win
                     for (const letter of selectedWord) {
                         guessedLetters.add(letter);
                     }
