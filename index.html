@@ -96,3 +96,375 @@
             color: white;
             border: none;
         }
+        .btn-primary:hover:not(:disabled) {
+            background-color: #3182ce;
+            transform: translateY(-1px);
+        }
+        .btn-primary:active:not(:disabled) {
+            background-color: #2b6cb0;
+            transform: translateY(0);
+        }
+        .btn-secondary {
+            background-color: #a0aec0;
+            color: white;
+            border: none;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #718096;
+            transform: translateY(-1px);
+        }
+        .btn-secondary:active:not(:disabled) {
+            background-color: #5b6e82;
+            transform: translateY(0);
+        }
+        .btn-hint {
+            background-color: #f6ad55;
+            color: white;
+            border: none;
+        }
+        .btn-hint:hover:not(:disabled) {
+            background-color: #ed8936;
+            transform: translateY(-1px);
+        }
+        .btn-hint:active:not(:disabled) {
+            background-color: #dd6b20;
+            transform: translateY(0);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="text-4xl font-extrabold text-gray-800">Hangman</h1>
+
+        <div id="setup-section" class="flex flex-col gap-4">
+            <div class="select-group">
+                <select id="topic-select" class="topic-select">
+                    <option value="" disabled selected>Choose a topic to begin...</option>
+                    <option value="animals">Animals</option>
+                    <option value="foods">Foods</option>
+                    <option value="countries">Countries</option>
+                    <option value="gpu">GPUs</option>
+                    <option value="carBrands">Car Brands</option>
+                    <option value="phones">Phones</option>
+                    <option value="videoGames">Video Games</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="game-section" class="hidden">
+            <pre id="hangman-stage"></pre>
+            <h2 id="topic-display" class="text-xl font-semibold text-gray-600"></h2>
+            <div id="timer-info"></div>
+            <div id="word-display"></div>
+            <div id="guessed-letters"></div>
+            <p id="message" class="message text-red-500 font-semibold"></p>
+
+            <div class="input-group">
+                <input type="text" id="guess-input" class="guess-input" placeholder="Guess a letter or the word">
+                <button id="guess-button" class="btn btn-primary">Submit</button>
+            </div>
+
+            <div class="button-row">
+                <button id="hint-button" class="btn btn-hint">Get Hint ( -5s)</button>
+                <button id="new-game-button" class="btn btn-secondary">New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Game constants
+            const stages = [
+`
+ +---+
+ |   |
+     |
+     |
+     |
+     |
+=========
+`,
+`
+ +---+
+ |   |
+ O   |
+     |
+     |
+     |
+=========
+`,
+`
+ +---+
+ |   |
+ O   |
+ |   |
+     |
+     |
+=========
+`,
+`
+ +---+
+ |   |
+ O   |
+/|   |
+     |
+     |
+=========
+`,
+`
+ +---+
+ |   |
+ O   |
+/|\\  |
+     |
+     |
+=========
+`,
+`
+ +---+
+ |   |
+ O   |
+/|\\  |
+/    |
+     |
+=========
+`,
+`
+ +---+
+ |   |
+ O   |
+/|\\  |
+/ \\  |
+     |
+=========
+`
+            ];
+            const topics = {
+                animals: {
+                    words: ["lion", "tiger", "bear", "snake", "eagle", "whale", "shark", "zebra", "koala", "penguin"],
+                    hints: [
+                        "King of the jungle", "A large feline with stripes", "Hibernates in winter", "A legless reptile", "A large bird of prey",
+                        "Largest animal on Earth", "A fish known for its teeth", "A striped African equid", "An Australian marsupial", "A flightless bird that lives in Antarctica"
+                    ]
+                },
+                foods: {
+                    words: ["apple", "bread", "cheese", "pasta", "pizza", "sushi", "onion", "grape", "lemon", "honey"],
+                    hints: [
+                        "A crunchy fruit, often red or green", "Made from flour and yeast", "A dairy product often paired with wine", "Italian noodles", "A dish with cheese and tomato sauce",
+                        "Japanese dish with rice and fish", "A bulb vegetable that makes you cry", "Small, round fruit in bunches", "A sour yellow citrus fruit", "A sweet, sticky liquid made by bees"
+                    ]
+                },
+                countries: {
+                    words: ["canada", "brazil", "egypt", "japan", "india", "france", "mexico", "russia", "china", "australia"],
+                    hints: [
+                        "Known for maple syrup and hockey", "Largest country in South America", "Home of the pyramids and the Sphinx", "The Land of the Rising Sun", "Known for the Taj Mahal and Bollywood",
+                        "Famous for the Eiffel Tower and cuisine", "Known for its tacos and sombreros", "The largest country in the world by area", "Has a Great Wall and a massive population", "A continent and a country known for kangaroos"
+                    ]
+                },
+                gpu: {
+                    words: ["geforce", "radeon", "nvidia", "raytracing", "shader", "tensor", "vram", "amd", "overclock", "heatsink"],
+                    hints: [
+                        "NVIDIA's main line of consumer graphics cards", "AMD's primary brand for graphics cards", "The 'green team,' known for its RTX series", "A rendering technique for hyper-realistic lighting", "A program that tells the GPU how to draw pixels",
+                        "Specialized cores used for AI and deep learning", "The dedicated memory on a graphics card", "The 'red team,' a major GPU and CPU manufacturer", "Running a component faster than its rated speed", "The metal component that dissipates warmth from the chip"
+                    ]
+                },
+                carBrands: {
+                    words: ["toyota", "ford", "honda", "tesla", "bmw", "porsche", "ferrari", "volkswagen", "jeep", "subaru"],
+                    hints: [
+                        "A Japanese brand known for reliability and the Camry", "An American company famous for the Mustang and F-150", "Japanese manufacturer known for the Civic and Accord", "An American EV company led by Elon Musk", "German brand known as the 'Ultimate Driving Machine'",
+                        "German sports car maker famous for the 911", "Iconic Italian supercar brand with a prancing horse logo", "German for 'people's car,' makes the Golf", "American brand known for its rugged off-road vehicles", "Japanese brand known for all-wheel drive"
+                    ]
+                },
+                phones: {
+                    words: ["iphone", "android", "samsung", "pixel", "nokia", "motorola", "oneplus", "xiaomi", "blackberry", "huawei"],
+                    hints: [
+                        "Apple's iconic smartphone", "Google's open-source mobile operating system", "A South Korean giant known for its Galaxy series", "Google's own brand of smartphones", "A Finnish brand once famous for 'indestructible' phones",
+                        "American company that created the first mobile phone", "Known for its 'flagship killer' phones", "A major Chinese electronics brand", "Once famous for its physical keyboards and BBM", "A Chinese tech giant known for its P series phones"
+                    ]
+                },
+                videoGames: {
+                    words: ["minecraft", "fortnite", "zelda", "mario", "pokemon", "roblox", "tetris", "pacman", "overwatch", "eldenring"],
+                    hints: [
+                        "A sandbox game about placing blocks", "A popular battle royale game with a building mechanic", "Nintendo's fantasy series about the hero of Hyrule", "Nintendo's famous Italian plumber mascot", "A game about catching and training pocket monsters",
+                        "An online platform where users create and play games", "A classic puzzle game involving falling blocks", "An arcade classic about eating dots in a maze", "A team-based hero shooter from Blizzard", "A challenging open-world RPG by FromSoftware"
+                    ]
+                }
+            };
+
+            // DOM Elements
+            const setupSection = document.getElementById('setup-section');
+            const gameSection = document.getElementById('game-section');
+            const topicSelect = document.getElementById('topic-select');
+            const topicDisplay = document.getElementById('topic-display');
+            const hangmanStage = document.getElementById('hangman-stage');
+            const timerInfo = document.getElementById('timer-info');
+            const wordDisplay = document.getElementById('word-display');
+            const guessedLettersDisplay = document.getElementById('guessed-letters');
+            const messageDisplay = document.getElementById('message');
+            const guessInput = document.getElementById('guess-input');
+            const guessButton = document.getElementById('guess-button');
+            const hintButton = document.getElementById('hint-button');
+            const newGameButton = document.getElementById('new-game-button');
+
+            // Game State
+            let selectedWord = '';
+            let selectedHint = '';
+            let guessedLetters = new Set();
+            let wrongGuesses = 0;
+            let timer;
+            let timeLeft = 60;
+            const HINT_PENALTY = 5;
+            const MAX_WRONG_GUESSES = 6;
+
+            // Functions
+            const startGame = () => {
+                const topicValue = topicSelect.value;
+                if (!topicValue) return;
+                
+                const topicText = topicSelect.options[topicSelect.selectedIndex].text;
+                topicDisplay.textContent = `Topic: ${topicText}`;
+
+                wrongGuesses = 0;
+                guessedLetters = new Set();
+                timeLeft = 60;
+                messageDisplay.textContent = '';
+                
+                const wordList = topics[topicValue].words;
+                const hintList = topics[topicValue].hints;
+                const randomIndex = Math.floor(Math.random() * wordList.length);
+                selectedWord = wordList[randomIndex].toUpperCase();
+                selectedHint = hintList[randomIndex];
+
+                setupSection.classList.add('hidden');
+                gameSection.classList.remove('hidden');
+                
+                guessInput.value = '';
+                guessInput.focus();
+                
+                guessButton.disabled = false;
+                guessInput.disabled = false;
+                hintButton.disabled = false;
+
+                updateDisplay();
+                startTimer();
+            };
+            
+            const updateDisplay = () => {
+                wordDisplay.textContent = selectedWord
+                    .split('')
+                    .map(letter => (guessedLetters.has(letter) ? letter : '_'))
+                    .join(' ');
+                
+                hangmanStage.textContent = stages[wrongGuesses];
+                guessedLettersDisplay.textContent = `Guessed: ${[...guessedLetters].sort().join(', ')}`;
+                checkGameState();
+            };
+            
+            const handleGuess = () => {
+                const guess = guessInput.value.toUpperCase().trim();
+                guessInput.value = '';
+                messageDisplay.textContent = '';
+
+                if (!guess) return;
+
+                // Full word guess logic
+                if (guess.length > 1) {
+                    if (guess === selectedWord) {
+                        for (const letter of selectedWord) {
+                            guessedLetters.add(letter);
+                        }
+                    } else {
+                        wrongGuesses++;
+                        messageDisplay.textContent = `"${guess}" is not the word.`;
+                    }
+                // Single letter guess logic
+                } else {
+                    if (!/^[A-Z]$/.test(guess)) {
+                        messageDisplay.textContent = 'Please enter a valid letter.';
+                        return;
+                    }
+                    if (guessedLetters.has(guess)) {
+                        messageDisplay.textContent = `You've already guessed "${guess}".`;
+                        return;
+                    }
+                    guessedLetters.add(guess);
+                    if (!selectedWord.includes(guess)) {
+                        wrongGuesses++;
+                    }
+                }
+                updateDisplay();
+            };
+
+            const checkGameState = () => {
+                if (!wordDisplay.textContent.includes('_')) {
+                    endGame('Congratulations! You won! 🎉');
+                }
+                else if (wrongGuesses >= MAX_WRONG_GUESSES) {
+                    endGame(`Game over! The word was "${selectedWord}". 😔`);
+                }
+            };
+
+            const startTimer = () => {
+                clearInterval(timer); 
+                timerInfo.textContent = `Time Left: ${timeLeft}s`;
+                timer = setInterval(() => {
+                    timeLeft--;
+                    timerInfo.textContent = `Time Left: ${timeLeft}s`;
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        endGame(`Time's up! The word was "${selectedWord}". ⏱️`);
+                    }
+                }, 1000);
+            };
+
+            const showHint = () => {
+                if (timeLeft > HINT_PENALTY) {
+                    timeLeft -= HINT_PENALTY;
+                    timerInfo.textContent = `Time Left: ${timeLeft}s`;
+                    messageDisplay.textContent = `Hint: ${selectedHint}`;
+                    hintButton.disabled = true;
+                } else {
+                    messageDisplay.textContent = 'Not enough time for a hint!';
+                }
+            };
+
+            const endGame = (message) => {
+                clearInterval(timer);
+                messageDisplay.textContent = message;
+                wordDisplay.textContent = selectedWord.split('').join(' ');
+                guessButton.disabled = true;
+                guessInput.disabled = true;
+                hintButton.disabled = true;
+            };
+            
+            const resetToMenu = () => {
+                clearInterval(timer);
+                gameSection.classList.add('hidden');
+                setupSection.classList.remove('hidden');
+                topicSelect.value = "";
+                topicDisplay.textContent = "";
+            };
+
+            // Event Listeners
+            topicSelect.addEventListener('change', startGame);
+            guessButton.addEventListener('click', handleGuess);
+            guessInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handleGuess();
+            });
+            hintButton.addEventListener('click', showHint);
+            newGameButton.addEventListener('click', resetToMenu);
+        });
+    </script>
+</body>
+</html>
