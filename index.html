@@ -91,37 +91,102 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             white-space: nowrap;
         }
-        .btn-primary { background-color: #4299e1; color: white; border: none; }
-        .btn-primary:hover:not(:disabled) { background-color: #3182ce; transform: translateY(-1px); }
-        .btn-primary:active:not(:disabled) { background-color: #2b6cb0; transform: translateY(0); }
-        .btn-secondary { background-color: #a0aec0; color: white; border: none; }
-        .btn-secondary:hover:not(:disabled) { background-color: #718096; transform: translateY(-1px); }
-        .btn-secondary:active:not(:disabled) { background-color: #5b6e82; transform: translateY(0); }
-        .btn-hint { background-color: #f6ad55; color: white; border: none; }
-        .btn-hint:hover:not(:disabled) { background-color: #ed8936; transform: translateY(-1px); }
-        .btn-hint:active:not(:disabled) { background-color: #dd6b20; transform: translateY(0); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
-        .button-row { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+        .btn-primary {
+            background-color: #4299e1;
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: #3182ce;
+            transform: translateY(-1px);
+        }
+        .btn-primary:active:not(:disabled) {
+            background-color: #2b6cb0;
+            transform: translateY(0);
+        }
+        .btn-secondary {
+            background-color: #a0aec0;
+            color: white;
+            border: none;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #718096;
+            transform: translateY(-1px);
+        }
+        .btn-secondary:active:not(:disabled) {
+            background-color: #5b6e82;
+            transform: translateY(0);
+        }
+        .btn-hint {
+            background-color: #f6ad55;
+            color: white;
+            border: none;
+        }
+        .btn-hint:hover:not(:disabled) {
+            background-color: #ed8936;
+            transform: translateY(-1px);
+        }
+        .btn-hint:active:not(:disabled) {
+            background-color: #dd6b20;
+            transform: translateY(0);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
 
         /* Image reveal section */
         #image-section {
-            position: relative; width: 100%; height: 180px;
-            border-radius: 0.75rem; overflow: hidden;
-            background-color: #cbd5e0; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            position: relative;
+            width: 100%;
+            height: 180px;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background-color: #cbd5e0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
-        #word-image { width: 100%; height: 100%; object-fit: cover; display: block; }
-        #image-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: grid; }
+        #word-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        #image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: grid;
+        }
         .overlay-sq {
             background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-            border: 1.5px solid rgba(255,255,255,0.12);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
             transition: opacity 0.45s ease, transform 0.45s ease;
             transform-origin: center;
         }
-        .overlay-sq.revealed { opacity: 0; transform: scale(0.05); pointer-events: none; }
+        .overlay-sq.revealed {
+            opacity: 0;
+            transform: scale(0.05);
+            pointer-events: none;
+        }
 
         /* Timer warning */
-        @keyframes timerPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .timer-warning { color: #e53e3e !important; animation: timerPulse 0.8s ease-in-out infinite; }
+        @keyframes timerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .timer-warning {
+            color: #e53e3e !important;
+            animation: timerPulse 0.8s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
@@ -171,6 +236,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Game constants
             const stages = [
 `
  +---+
@@ -239,119 +305,120 @@
 
             const topics = {
                 animals: {
-                    words: ["lion","tiger","bear","snake","eagle","whale","shark","zebra","koala","penguin"],
-                    wikiTerms: ["Lion","Tiger","Bear","Snake","Eagle","Whale","Shark","Zebra","Koala","Penguin"],
+                    words: ["lion", "tiger", "bear", "snake", "eagle", "whale", "shark", "zebra", "koala", "penguin"],
+                    wikiTerms: ["Lion", "Tiger", "Bear", "Snake", "Eagle", "Whale", "Shark", "Zebra", "Koala", "Penguin"],
                     hints: [
-                        ["Royalty doesn't need a crown","Mane attraction","Rules the pride, not the jungle"],
-                        ["Patience in tall grass","Orange with opinions","Stripes earned, not given"],
-                        ["Sleeps through the cold","Honey thief of the forest","Big enough to ignore you"],
-                        ["No legs, no problem","Sheds its past regularly","Tongue does the seeing"],
-                        ["Eyes the sky like it owns it","Symbol of more than one nation","Wingspan that earns respect"],
-                        ["Bigger than you'd ever want to meet","Sings in the deep","Breathes air, lives in waves"],
-                        ["Smile you won't forget","Always moving, never resting","Been here since before the dinosaurs"],
-                        ["Nature's barcode","Confuses predators by design","Black and white, never grey"],
-                        ["Hugs a tree all day","Not a bear, never was","Sleeps 20 hours and earns it"],
-                        ["Formal attire, never flies","Walks awkwardly, swims gracefully","Ice shelf resident"]
+                        ["Royalty doesn't need a crown", "Mane attraction", "Rules the pride, not the jungle"],
+                        ["Patience in tall grass", "Orange with opinions", "Stripes earned, not given"],
+                        ["Sleeps through the cold", "Honey thief of the forest", "Big enough to ignore you"],
+                        ["No legs, no problem", "Sheds its past regularly", "Tongue does the seeing"],
+                        ["Eyes the sky like it owns it", "Symbol of more than one nation", "Wingspan that earns respect"],
+                        ["Bigger than you'd ever want to meet", "Sings in the deep", "Breathes air, lives in waves"],
+                        ["Smile you won't forget", "Always moving, never resting", "Been here since before the dinosaurs"],
+                        ["Nature's barcode", "Confuses predators by design", "Black and white, never grey"],
+                        ["Hugs a tree all day", "Not a bear, never was", "Sleeps 20 hours and earns it"],
+                        ["Formal attire, never flies", "Walks awkwardly, swims gracefully", "Ice shelf resident"]
                     ]
                 },
                 foods: {
-                    words: ["apple","bread","cheese","pasta","pizza","sushi","onion","grape","lemon","honey"],
-                    wikiTerms: ["Apple","Bread","Cheese","Pasta","Pizza","Sushi","Onion","Grape","Lemon","Honey"],
+                    words: ["apple", "bread", "cheese", "pasta", "pizza", "sushi", "onion", "grape", "lemon", "honey"],
+                    wikiTerms: ["Apple", "Bread", "Cheese", "Pasta", "Pizza", "Sushi", "Onion", "Grape", "Lemon", "Honey"],
                     hints: [
-                        ["Keeps the doctor away, allegedly","Fell on Newton too","Crunches loudly at the wrong time"],
-                        ["Rises in the oven","Civilization's oldest staple","Sliced or not, still essential"],
-                        ["Ages well in a cave","Mold made edible","Comes in wheels and wedges"],
-                        ["Twirled around a fork","Al dente is non-negotiable","Italy's gift to the world"],
-                        ["Delivered in a flat box","Debate: pineapple or not","Round food, triangular slices"],
-                        ["Raw fish that became fine dining","Rice wrapped tight, fish on top","Eaten with two sticks"],
-                        ["Peeling it is a cry for help","Layers upon layers","Makes everything taste better"],
-                        ["Comes in bunches, disappears fast","Ferments into something stronger","Stomped for centuries"],
-                        ["Puckered lips guaranteed","When life gives you one, you know what to do","Yellow and unforgiving"],
-                        ["Made by tiny wings","Never expires in the jar","Sweet work of thousands"]
+                        ["Keeps the doctor away, allegedly", "Fell on Newton too", "Crunches loudly at the wrong time"],
+                        ["Rises in the oven", "Civilization's oldest staple", "Sliced or not, still essential"],
+                        ["Ages well in a cave", "Mold made edible", "Comes in wheels and wedges"],
+                        ["Twirled around a fork", "Al dente is non-negotiable", "Italy's gift to the world"],
+                        ["Delivered in a flat box", "Debate: pineapple or not", "Round food, triangular slices"],
+                        ["Raw fish that became fine dining", "Rice wrapped tight, fish on top", "Eaten with two sticks"],
+                        ["Peeling it is a cry for help", "Layers upon layers", "Makes everything taste better"],
+                        ["Comes in bunches, disappears fast", "Ferments into something stronger", "Stomped for centuries"],
+                        ["Puckered lips guaranteed", "When life gives you one, you know what to do", "Yellow and unforgiving"],
+                        ["Made by tiny wings", "Never expires in the jar", "Sweet work of thousands"]
                     ]
                 },
                 countries: {
-                    words: ["canada","brazil","egypt","japan","india","france","mexico","russia","china","australia"],
-                    wikiTerms: ["Canada","Brazil","Egypt","Japan","India","France","Mexico","Russia","China","Australia"],
+                    words: ["canada", "brazil", "egypt", "japan", "india", "france", "mexico", "russia", "china", "australia"],
+                    wikiTerms: ["Canada", "Brazil", "Egypt", "Japan", "India", "France", "Mexico", "Russia", "China", "Australia"],
                     hints: [
-                        ["Very polite, very cold","Two languages, one peace","More lakes than anywhere else"],
-                        ["Carnival energy, jungle depth","Where the Amazon begins","Five-time world champions"],
-                        ["Sand, stone, and ancient secrets","Where rivers built empires","Pyramids predate almost everything"],
-                        ["Where the sun clocks in first","Trains arrive on the second","Cherry blossoms, brief and unforgettable"],
-                        ["A billion stories, one peninsula","Spice trade started here","Democracy's most populous chapter"],
-                        ["Romance is baked into the bread","Wine, art, and strong opinions","Boulevards built for impressions"],
-                        ["Spice, color, and ancient temples","Aztec roots run deep","Where tequila comes from"],
-                        ["So vast it spans eleven time zones","Winters that earn their reputation","Bears are more common than you'd think"],
-                        ["A wall so long it curves with the earth","Invented paper and printing","Oldest continuous civilization"],
-                        ["Upside down on the map, somehow fine","Half the wildlife wants you dead","Summer when you expect winter"]
+                        ["Very polite, very cold", "Two languages, one peace", "More lakes than anywhere else"],
+                        ["Carnival energy, jungle depth", "Where the Amazon begins", "Five-time world champions"],
+                        ["Sand, stone, and ancient secrets", "Where rivers built empires", "Pyramids predate almost everything"],
+                        ["Where the sun clocks in first", "Trains arrive on the second", "Cherry blossoms, brief and unforgettable"],
+                        ["A billion stories, one peninsula", "Spice trade started here", "Democracy's most populous chapter"],
+                        ["Romance is baked into the bread", "Wine, art, and strong opinions", "Boulevards built for impressions"],
+                        ["Spice, color, and ancient temples", "Aztec roots run deep", "Where tequila comes from"],
+                        ["So vast it spans eleven time zones", "Winters that earn their reputation", "Bears are more common than you'd think"],
+                        ["A wall so long it curves with the earth", "Invented paper and printing", "Oldest continuous civilization"],
+                        ["Upside down on the map, somehow fine", "Half the wildlife wants you dead", "Summer when you expect winter"]
                     ]
                 },
                 gpu: {
-                    words: ["geforce","radeon","nvidia","raytracing","shader","tensor","vram","amd","overclock","heatsink"],
-                    wikiTerms: ["GeForce","Radeon","Nvidia","Ray tracing (graphics)","Shader","Tensor Processing Unit","Video random-access memory","Advanced Micro Devices","Overclocking","Heat sink"],
+                    words: ["geforce", "radeon", "nvidia", "raytracing", "shader", "tensor", "vram", "amd", "overclock", "heatsink"],
+                    wikiTerms: ["GeForce", "Radeon", "Nvidia", "Ray tracing (graphics)", "Shader", "Tensor Processing Unit", "Video random-access memory", "Advanced Micro Devices", "Overclocking", "Heat sink"],
                     hints: [
-                        ["Green team's flagship lineup","RTX is its latest chapter","Powers most rigs you've seen"],
-                        ["Red team's answer to green","RX series rings a bell","AMD's visual muscle"],
-                        ["The company, not just the chip","Green logo, GPU royalty","Also runs the world's AI now"],
-                        ["Light that knows where it came from","Reflections that cost performance","Makes glass look like glass"],
-                        ["Tiny program, massive visual impact","Runs on the GPU, not the CPU","Colors, shadows, effects — all this"],
-                        ["Silicon that thinks in numbers","AI's favorite math unit","Named after a type of matrix"],
-                        ["The card's own private memory","Filled by textures and frames","More means bigger resolutions"],
-                        ["Makes both CPUs and GPUs","Red versus green, always","Ryzen and Radeon, same family"],
-                        ["Pushing past the spec sheet","More speed, more heat","Warranty may not approve"],
-                        ["Fins and metal, no moving parts","Sits on top of the chip","Keeps things from melting"]
+                        ["Green team's flagship lineup", "RTX is its latest chapter", "Powers most rigs you've seen"],
+                        ["Red team's answer to green", "RX series rings a bell", "AMD's visual muscle"],
+                        ["The company, not just the chip", "Green logo, GPU royalty", "Also runs the world's AI now"],
+                        ["Light that knows where it came from", "Reflections that cost performance", "Makes glass look like glass"],
+                        ["Tiny program, massive visual impact", "Runs on the GPU, not the CPU", "Colors, shadows, effects — all this"],
+                        ["Silicon that thinks in numbers", "AI's favorite math unit", "Named after a type of matrix"],
+                        ["The card's own private memory", "Filled by textures and frames", "More means bigger resolutions"],
+                        ["Makes both CPUs and GPUs", "Red versus green, always", "Ryzen and Radeon, same family"],
+                        ["Pushing past the spec sheet", "More speed, more heat", "Warranty may not approve"],
+                        ["Fins and metal, no moving parts", "Sits on top of the chip", "Keeps things from melting"]
                     ]
                 },
                 carBrands: {
-                    words: ["toyota","ford","honda","tesla","bmw","porsche","ferrari","volkswagen","jeep","subaru"],
-                    wikiTerms: ["Toyota Land Cruiser","Ford Mustang","Honda Civic","Tesla Model 3","BMW M3","Porsche 911","Ferrari 488 GTB","Volkswagen Golf","Jeep Wrangler","Subaru Outback"],
+                    words: ["toyota", "ford", "honda", "tesla", "bmw", "porsche", "ferrari", "volkswagen", "jeep", "subaru"],
+                    wikiTerms: ["Toyota Land Cruiser", "Ford Mustang", "Honda Civic", "Tesla Model 3", "BMW M3", "Porsche 911", "Ferrari 488 GTB", "Volkswagen Golf", "Jeep Wrangler", "Subaru Outback"],
                     hints: [
-                        ["Rarely breaks, rarely brags","Corolla is its everyman","Hybrid before it was cool"],
-                        ["Built tough, born American","Mustang runs in its veins","Put America on the road"],
-                        ["Reliable as a handshake","Civic is its bread and butter","Also makes motorcycles and jets"],
-                        ["Plugs in, shows off","Software updates your car overnight","Elon's most profitable side project"],
-                        ["Engineered for the road less straight","Kidney grille, always","Bavarian and proud of it"],
-                        ["Stuttgart's finest export","The 911 never got old","Sports car that somehow has a back seat"],
-                        ["Prancing horse, roaring engine","Red by reputation","Waiting list longer than you'd expect"],
-                        ["The people's choice, literally","Beetle started it all","German engineering, everyday price"],
-                        ["Prefers dirt to pavement","Wrangler waves at other Wranglers","Built when roads weren't"],
-                        ["Four wheels always working","Beloved by outdoorsy types","Symmetrical AWD, always"]
+                        ["Rarely breaks, rarely brags", "Corolla is its everyman", "Hybrid before it was cool"],
+                        ["Built tough, born American", "Mustang runs in its veins", "Put America on the road"],
+                        ["Reliable as a handshake", "Civic is its bread and butter", "Also makes motorcycles and jets"],
+                        ["Plugs in, shows off", "Software updates your car overnight", "Elon's most profitable side project"],
+                        ["Engineered for the road less straight", "Kidney grille, always", "Bavarian and proud of it"],
+                        ["Stuttgart's finest export", "The 911 never got old", "Sports car that somehow has a back seat"],
+                        ["Prancing horse, roaring engine", "Red by reputation", "Waiting list longer than you'd expect"],
+                        ["The people's choice, literally", "Beetle started it all", "German engineering, everyday price"],
+                        ["Prefers dirt to pavement", "Wrangler waves at other Wranglers", "Built when roads weren't"],
+                        ["Four wheels always working", "Beloved by outdoorsy types", "Symmetrical AWD, always"]
                     ]
                 },
                 phones: {
-                    words: ["iphone","android","samsung","pixel","nokia","motorola","oneplus","xiaomi","blackberry","huawei"],
-                    wikiTerms: ["IPhone","Android (operating system)","Samsung Galaxy","Pixel (smartphone)","Nokia","Motorola","OnePlus","Xiaomi","BlackBerry","Huawei"],
+                    words: ["iphone", "android", "samsung", "pixel", "nokia", "motorola", "oneplus", "xiaomi", "blackberry", "huawei"],
+                    wikiTerms: ["IPhone", "Android (operating system)", "Samsung Galaxy", "Pixel (smartphone)", "Nokia", "Motorola", "OnePlus", "Xiaomi", "BlackBerry", "Huawei"],
                     hints: [
-                        ["A fruit, a trillion dollars, a phone","Lightning port caused drama","One button, then none"],
-                        ["Free and open, powers most pockets","Google's OS, everyone's phone","Runs on everything, owned by no one"],
-                        ["Galaxy-branded, Korea-born","Foldables before anyone else","Makes chips for itself and rivals"],
-                        ["Search giant's hardware bet","Camera does the heavy lifting","Pure Android, straight from the source"],
-                        ["Once indestructible, now nostalgic","3310 was basically a weapon","Finnish roots, global reach"],
-                        ["Invented the call, then forgot how to style it","Razr flipped the game","The first mobile call was made here"],
-                        ["Flagship quality, budget ambition","Never settle, they said","China's challenger brand"],
-                        ["Budget king, massive scale","Mi and Redmi, same family","China's most popular phone abroad"],
-                        ["QWERTY before touchscreens took over","Corporate favourite, then forgotten","BBM was its secret weapon"],
-                        ["Banned in some places, popular in many","Kirin chips, Chinese roots","5G pioneer with controversy attached"]
+                        ["A fruit, a trillion dollars, a phone", "Lightning port caused drama", "One button, then none"],
+                        ["Free and open, powers most pockets", "Google's OS, everyone's phone", "Runs on everything, owned by no one"],
+                        ["Galaxy-branded, Korea-born", "Foldables before anyone else", "Makes chips for itself and rivals"],
+                        ["Search giant's hardware bet", "Camera does the heavy lifting", "Pure Android, straight from the source"],
+                        ["Once indestructible, now nostalgic", "3310 was basically a weapon", "Finnish roots, global reach"],
+                        ["Invented the call, then forgot how to style it", "Razr flipped the game", "The first mobile call was made here"],
+                        ["Flagship quality, budget ambition", "Never settle, they said", "China's challenger brand"],
+                        ["Budget king, massive scale", "Mi and Redmi, same family", "China's most popular phone abroad"],
+                        ["QWERTY before touchscreens took over", "Corporate favourite, then forgotten", "BBM was its secret weapon"],
+                        ["Banned in some places, popular in many", "Kirin chips, Chinese roots", "5G pioneer with controversy attached"]
                     ]
                 },
                 videoGames: {
-                    words: ["minecraft","fortnite","zelda","mario","pokemon","roblox","tetris","pacman","overwatch","eldenring"],
-                    wikiTerms: ["Minecraft","Fortnite","The Legend of Zelda","Mario (franchise)","Pokémon","Roblox","Tetris","Pac-Man","Overwatch (video game)","Elden Ring"],
+                    words: ["minecraft", "fortnite", "zelda", "mario", "pokemon", "roblox", "tetris", "pacman", "overwatch", "eldenring"],
+                    wikiTerms: ["Minecraft", "Fortnite", "The Legend of Zelda", "Mario (franchise)", "Pokémon", "Roblox", "Tetris", "Pac-Man", "Overwatch (video game)", "Elden Ring"],
                     hints: [
-                        ["Infinite world, square everything","Creeper hiss means run","Best-selling game ever made"],
-                        ["100 drop in, one flies out","Build walls mid-fight","Season passes and banana skins"],
-                        ["Triforce, not a torch","Link fights, she gets the title","Hyrule is always in danger"],
-                        ["Overalls, no explanation needed","Coins, mushrooms, and castles","Plumber who never plumbs"],
-                        ["Gotta catch 'em... you know","Red or Blue, the divide remains","Pikachu is just the mascot"],
-                        ["Kids built the game you're playing","User-made worlds, endless genres","Robux is its currency"],
-                        ["Falling shapes, rising panic","Russian origin, global obsession","There's no winning, only surviving longer"],
-                        ["Chomp or be chomped","Maze runner since 1980","Four ghosts, one yellow circle"],
-                        ["Pick your hero, guard the payload","Blizzard's team shooter","Lore heavier than the gameplay"],
-                        ["Die, learn, die again","FromSoftware's open-world opus","A novelist and a game designer made this"]
+                        ["Infinite world, square everything", "Creeper hiss means run", "Best-selling game ever made"],
+                        ["100 drop in, one flies out", "Build walls mid-fight", "Season passes and banana skins"],
+                        ["Triforce, not a torch", "Link fights, she gets the title", "Hyrule is always in danger"],
+                        ["Overalls, no explanation needed", "Coins, mushrooms, and castles", "Plumber who never plumbs"],
+                        ["Gotta catch 'em... you know", "Red or Blue, the divide remains", "Pikachu is just the mascot"],
+                        ["Kids built the game you're playing", "User-made worlds, endless genres", "Robux is its currency"],
+                        ["Falling shapes, rising panic", "Russian origin, global obsession", "There's no winning, only surviving longer"],
+                        ["Chomp or be chomped", "Maze runner since 1980", "Four ghosts, one yellow circle"],
+                        ["Pick your hero, guard the payload", "Blizzard's team shooter", "Lore heavier than the gameplay"],
+                        ["Die, learn, die again", "FromSoftware's open-world opus", "A novelist and a game designer made this"]
                     ]
                 }
             };
 
+            // DOM Elements
             const setupSection = document.getElementById('setup-section');
             const gameSection = document.getElementById('game-section');
             const topicSelect = document.getElementById('topic-select');
@@ -368,37 +435,59 @@
             const wordImage = document.getElementById('word-image');
             const imageOverlay = document.getElementById('image-overlay');
 
-            let selectedWord = '', selectedHint = '';
+            // Game State
+            let selectedWord = '';
+            let selectedHint = '';
             let guessedLetters = new Set();
-            let wrongGuesses = 0, timer, timeLeft = 60;
-            let imageSquares = [], revealedCount = 0;
-            const HINT_PENALTY = 10, MAX_WRONG_GUESSES = 6;
+            let wrongGuesses = 0;
+            let timer;
+            let timeLeft = 60;
+            const HINT_PENALTY = 10;
+            const MAX_WRONG_GUESSES = 6;
 
+            // Image reveal state
+            let imageSquares = [];
+            let revealedCount = 0;
+
+            // Image grid functions
             const fetchWordImage = async (wikiTerm) => {
                 wordImage.src = '';
                 try {
-                    const res = await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(wikiTerm)}&prop=pageimages&format=json&pithumbsize=500&origin=*`);
+                    const res = await fetch(
+                        `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(wikiTerm)}&prop=pageimages&format=json&pithumbsize=500&origin=*`
+                    );
                     const data = await res.json();
-                    const page = data.query.pages[Object.keys(data.query.pages)[0]];
+                    const pages = data.query.pages;
+                    const page = pages[Object.keys(pages)[0]];
                     if (page?.thumbnail?.source) wordImage.src = page.thumbnail.source;
-                } catch (e) {}
+                } catch (e) { /* placeholder stays */ }
             };
 
             const setupImageGrid = (wordLength) => {
                 imageOverlay.innerHTML = '';
                 imageSquares = [];
                 revealedCount = 0;
+
                 const n = wordLength;
                 const cols = n <= 5 ? n : Math.ceil(n / 2);
                 const rows = Math.ceil(n / cols);
+                const totalCells = cols * rows;
+
                 imageOverlay.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
                 const active = [];
-                for (let i = 0; i < cols * rows; i++) {
+                for (let i = 0; i < totalCells; i++) {
                     const sq = document.createElement('div');
-                    if (i < n) { sq.classList.add('overlay-sq'); active.push(sq); }
-                    else sq.style.background = 'transparent';
+                    if (i < n) {
+                        sq.classList.add('overlay-sq');
+                        active.push(sq);
+                    } else {
+                        sq.style.background = 'transparent';
+                    }
                     imageOverlay.appendChild(sq);
                 }
+
+                // Fisher-Yates shuffle for random reveal order
                 for (let i = active.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [active[i], active[j]] = [active[j], active[i]];
@@ -407,36 +496,63 @@
             };
 
             const revealSquare = () => {
-                if (revealedCount < imageSquares.length) imageSquares[revealedCount++].classList.add('revealed');
+                if (revealedCount < imageSquares.length) {
+                    imageSquares[revealedCount].classList.add('revealed');
+                    revealedCount++;
+                }
             };
-            const revealAllSquares = () => { while (revealedCount < imageSquares.length) revealSquare(); };
 
+            const revealAllSquares = () => {
+                while (revealedCount < imageSquares.length) {
+                    revealSquare();
+                }
+            };
+
+            // Game functions
             const startGame = () => {
                 const topicValue = topicSelect.value;
                 if (!topicValue) return;
-                topicDisplay.textContent = `Topic: ${topicSelect.options[topicSelect.selectedIndex].text}`;
+
+                const topicText = topicSelect.options[topicSelect.selectedIndex].text;
+                topicDisplay.textContent = `Topic: ${topicText}`;
+
                 wrongGuesses = 0;
                 guessedLetters = new Set();
                 timeLeft = 60;
                 timerInfo.classList.remove('timer-warning');
                 messageDisplay.textContent = '';
-                const { words, hints, wikiTerms } = topics[topicValue];
-                const i = Math.floor(Math.random() * words.length);
-                selectedWord = words[i].toUpperCase();
-                selectedHint = hints[i][Math.floor(Math.random() * hints[i].length)];
+
+                const wordList = topics[topicValue].words;
+                const hintList = topics[topicValue].hints;
+                const wikiTerms = topics[topicValue].wikiTerms;
+                const randomIndex = Math.floor(Math.random() * wordList.length);
+                selectedWord = wordList[randomIndex].toUpperCase();
+                const hintPool = hintList[randomIndex];
+                selectedHint = hintPool[Math.floor(Math.random() * hintPool.length)];
+
                 setupImageGrid(selectedWord.length);
-                fetchWordImage(wikiTerms[i]);
+                fetchWordImage(wikiTerms[randomIndex]);
+
                 setupSection.classList.add('hidden');
                 gameSection.classList.remove('hidden');
+
                 guessInput.value = '';
                 guessInput.focus();
-                guessButton.disabled = guessInput.disabled = hintButton.disabled = false;
+
+                guessButton.disabled = false;
+                guessInput.disabled = false;
+                hintButton.disabled = false;
+
                 updateDisplay();
                 startTimer();
             };
 
             const updateDisplay = () => {
-                wordDisplay.textContent = selectedWord.split('').map(l => guessedLetters.has(l) ? l : '_').join(' ');
+                wordDisplay.textContent = selectedWord
+                    .split('')
+                    .map(letter => (guessedLetters.has(letter) ? letter : '_'))
+                    .join(' ');
+
                 hangmanStage.textContent = stages[wrongGuesses];
                 guessedLettersDisplay.textContent = `Guessed: ${[...guessedLetters].sort().join(', ')}`;
                 checkGameState();
@@ -446,31 +562,58 @@
                 const guess = guessInput.value.toUpperCase().trim();
                 guessInput.value = '';
                 messageDisplay.textContent = '';
+
                 if (!guess) return;
+
+                // Full word guess
                 if (guess.length > 1) {
-                    if (guess === selectedWord) { for (const l of selectedWord) guessedLetters.add(l); }
-                    else { wrongGuesses++; messageDisplay.textContent = `"${guess}" is not the word.`; }
+                    if (guess === selectedWord) {
+                        for (const letter of selectedWord) {
+                            guessedLetters.add(letter);
+                        }
+                    } else {
+                        wrongGuesses++;
+                        messageDisplay.textContent = `"${guess}" is not the word.`;
+                    }
+                // Single letter guess
                 } else {
-                    if (!/^[A-Z]$/.test(guess)) { messageDisplay.textContent = 'Please enter a valid letter.'; return; }
-                    if (guessedLetters.has(guess)) { messageDisplay.textContent = `You've already guessed "${guess}".`; return; }
+                    if (!/^[A-Z]$/.test(guess)) {
+                        messageDisplay.textContent = 'Please enter a valid letter.';
+                        return;
+                    }
+                    if (guessedLetters.has(guess)) {
+                        messageDisplay.textContent = `You've already guessed "${guess}".`;
+                        return;
+                    }
                     guessedLetters.add(guess);
-                    if (selectedWord.includes(guess)) revealSquare(); else wrongGuesses++;
+                    if (selectedWord.includes(guess)) {
+                        revealSquare();
+                    } else {
+                        wrongGuesses++;
+                    }
                 }
                 updateDisplay();
             };
 
             const checkGameState = () => {
-                if (!wordDisplay.textContent.includes('_')) endGame('Congratulations! You won! 🎉', true);
-                else if (wrongGuesses >= MAX_WRONG_GUESSES) endGame(`Game over! The word was "${selectedWord}". 😔`, false);
+                if (!wordDisplay.textContent.includes('_')) {
+                    endGame('Congratulations! You won! 🎉', true);
+                } else if (wrongGuesses >= MAX_WRONG_GUESSES) {
+                    endGame(`Game over! The word was "${selectedWord}". 😔`, false);
+                }
             };
 
             const startTimer = () => {
                 clearInterval(timer);
                 timerInfo.textContent = `Time Left: ${timeLeft}s`;
                 timer = setInterval(() => {
-                    timerInfo.textContent = `Time Left: ${--timeLeft}s`;
+                    timeLeft--;
+                    timerInfo.textContent = `Time Left: ${timeLeft}s`;
                     if (timeLeft <= 30) timerInfo.classList.add('timer-warning');
-                    if (timeLeft <= 0) { clearInterval(timer); endGame(`Time's up! The word was "${selectedWord}". ⏱️`, false); }
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        endGame(`Time's up! The word was "${selectedWord}". ⏱️`, false);
+                    }
                 }, 1000);
             };
 
@@ -480,7 +623,9 @@
                     timerInfo.textContent = `Time Left: ${timeLeft}s`;
                     messageDisplay.textContent = `Hint: ${selectedHint}`;
                     hintButton.disabled = true;
-                } else { messageDisplay.textContent = 'Not enough time for a hint!'; }
+                } else {
+                    messageDisplay.textContent = 'Not enough time for a hint!';
+                }
             };
 
             const endGame = (message, isWin) => {
@@ -488,19 +633,25 @@
                 if (isWin) revealAllSquares();
                 messageDisplay.textContent = message;
                 wordDisplay.textContent = selectedWord.split('').join(' ');
-                guessButton.disabled = guessInput.disabled = hintButton.disabled = true;
+                guessButton.disabled = true;
+                guessInput.disabled = true;
+                hintButton.disabled = true;
             };
 
             const resetToMenu = () => {
                 clearInterval(timer);
                 gameSection.classList.add('hidden');
                 setupSection.classList.remove('hidden');
-                topicSelect.value = topicDisplay.textContent = '';
+                topicSelect.value = "";
+                topicDisplay.textContent = "";
             };
 
+            // Event Listeners
             topicSelect.addEventListener('change', startGame);
             guessButton.addEventListener('click', handleGuess);
-            guessInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleGuess(); });
+            guessInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handleGuess();
+            });
             hintButton.addEventListener('click', showHint);
             newGameButton.addEventListener('click', resetToMenu);
         });
