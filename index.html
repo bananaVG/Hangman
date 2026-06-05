@@ -91,56 +91,37 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             white-space: nowrap;
         }
-        .btn-primary {
-            background-color: #4299e1;
-            color: white;
-            border: none;
+        .btn-primary { background-color: #4299e1; color: white; border: none; }
+        .btn-primary:hover:not(:disabled) { background-color: #3182ce; transform: translateY(-1px); }
+        .btn-primary:active:not(:disabled) { background-color: #2b6cb0; transform: translateY(0); }
+        .btn-secondary { background-color: #a0aec0; color: white; border: none; }
+        .btn-secondary:hover:not(:disabled) { background-color: #718096; transform: translateY(-1px); }
+        .btn-secondary:active:not(:disabled) { background-color: #5b6e82; transform: translateY(0); }
+        .btn-hint { background-color: #f6ad55; color: white; border: none; }
+        .btn-hint:hover:not(:disabled) { background-color: #ed8936; transform: translateY(-1px); }
+        .btn-hint:active:not(:disabled) { background-color: #dd6b20; transform: translateY(0); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+        .button-row { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+
+        /* Image reveal section */
+        #image-section {
+            position: relative; width: 100%; height: 180px;
+            border-radius: 0.75rem; overflow: hidden;
+            background-color: #cbd5e0; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
-        .btn-primary:hover:not(:disabled) {
-            background-color: #3182ce;
-            transform: translateY(-1px);
+        #word-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+        #image-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: grid; }
+        .overlay-sq {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            border: 1.5px solid rgba(255,255,255,0.12);
+            transition: opacity 0.45s ease, transform 0.45s ease;
+            transform-origin: center;
         }
-        .btn-primary:active:not(:disabled) {
-            background-color: #2b6cb0;
-            transform: translateY(0);
-        }
-        .btn-secondary {
-            background-color: #a0aec0;
-            color: white;
-            border: none;
-        }
-        .btn-secondary:hover:not(:disabled) {
-            background-color: #718096;
-            transform: translateY(-1px);
-        }
-        .btn-secondary:active:not(:disabled) {
-            background-color: #5b6e82;
-            transform: translateY(0);
-        }
-        .btn-hint {
-            background-color: #f6ad55;
-            color: white;
-            border: none;
-        }
-        .btn-hint:hover:not(:disabled) {
-            background-color: #ed8936;
-            transform: translateY(-1px);
-        }
-        .btn-hint:active:not(:disabled) {
-            background-color: #dd6b20;
-            transform: translateY(0);
-        }
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        .button-row {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
+        .overlay-sq.revealed { opacity: 0; transform: scale(0.05); pointer-events: none; }
+
+        /* Timer warning */
+        @keyframes timerPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .timer-warning { color: #e53e3e !important; animation: timerPulse 0.8s ease-in-out infinite; }
     </style>
 </head>
 <body>
@@ -165,6 +146,12 @@
         <div id="game-section" class="hidden">
             <pre id="hangman-stage"></pre>
             <h2 id="topic-display" class="text-xl font-semibold text-gray-600"></h2>
+
+            <div id="image-section">
+                <img id="word-image" src="" alt="">
+                <div id="image-overlay"></div>
+            </div>
+
             <div id="timer-info"></div>
             <div id="word-display"></div>
             <div id="guessed-letters"></div>
@@ -176,7 +163,7 @@
             </div>
 
             <div class="button-row">
-                <button id="hint-button" class="btn btn-hint">Get Hint ( -5s)</button>
+                <button id="hint-button" class="btn btn-hint">Get Hint ( -10s)</button>
                 <button id="new-game-button" class="btn btn-secondary">New Game</button>
             </div>
         </div>
@@ -184,7 +171,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Game constants
             const stages = [
 `
  +---+
@@ -250,59 +236,122 @@
 =========
 `
             ];
+
             const topics = {
                 animals: {
-                    words: ["lion", "tiger", "bear", "snake", "eagle", "whale", "shark", "zebra", "koala", "penguin"],
+                    words: ["lion","tiger","bear","snake","eagle","whale","shark","zebra","koala","penguin"],
+                    wikiTerms: ["Lion","Tiger","Bear","Snake","Eagle","Whale","Shark","Zebra","Koala","Penguin"],
                     hints: [
-                        "King of the jungle", "A large feline with stripes", "Hibernates in winter", "A legless reptile", "A large bird of prey",
-                        "Largest animal on Earth", "A fish known for its teeth", "A striped African equid", "An Australian marsupial", "A flightless bird that lives in Antarctica"
+                        ["Royalty doesn't need a crown","Mane attraction","Rules the pride, not the jungle"],
+                        ["Patience in tall grass","Orange with opinions","Stripes earned, not given"],
+                        ["Sleeps through the cold","Honey thief of the forest","Big enough to ignore you"],
+                        ["No legs, no problem","Sheds its past regularly","Tongue does the seeing"],
+                        ["Eyes the sky like it owns it","Symbol of more than one nation","Wingspan that earns respect"],
+                        ["Bigger than you'd ever want to meet","Sings in the deep","Breathes air, lives in waves"],
+                        ["Smile you won't forget","Always moving, never resting","Been here since before the dinosaurs"],
+                        ["Nature's barcode","Confuses predators by design","Black and white, never grey"],
+                        ["Hugs a tree all day","Not a bear, never was","Sleeps 20 hours and earns it"],
+                        ["Formal attire, never flies","Walks awkwardly, swims gracefully","Ice shelf resident"]
                     ]
                 },
                 foods: {
-                    words: ["apple", "bread", "cheese", "pasta", "pizza", "sushi", "onion", "grape", "lemon", "honey"],
+                    words: ["apple","bread","cheese","pasta","pizza","sushi","onion","grape","lemon","honey"],
+                    wikiTerms: ["Apple","Bread","Cheese","Pasta","Pizza","Sushi","Onion","Grape","Lemon","Honey"],
                     hints: [
-                        "A crunchy fruit, often red or green", "Made from flour and yeast", "A dairy product often paired with wine", "Italian noodles", "A dish with cheese and tomato sauce",
-                        "Japanese dish with rice and fish", "A bulb vegetable that makes you cry", "Small, round fruit in bunches", "A sour yellow citrus fruit", "A sweet, sticky liquid made by bees"
+                        ["Keeps the doctor away, allegedly","Fell on Newton too","Crunches loudly at the wrong time"],
+                        ["Rises in the oven","Civilization's oldest staple","Sliced or not, still essential"],
+                        ["Ages well in a cave","Mold made edible","Comes in wheels and wedges"],
+                        ["Twirled around a fork","Al dente is non-negotiable","Italy's gift to the world"],
+                        ["Delivered in a flat box","Debate: pineapple or not","Round food, triangular slices"],
+                        ["Raw fish that became fine dining","Rice wrapped tight, fish on top","Eaten with two sticks"],
+                        ["Peeling it is a cry for help","Layers upon layers","Makes everything taste better"],
+                        ["Comes in bunches, disappears fast","Ferments into something stronger","Stomped for centuries"],
+                        ["Puckered lips guaranteed","When life gives you one, you know what to do","Yellow and unforgiving"],
+                        ["Made by tiny wings","Never expires in the jar","Sweet work of thousands"]
                     ]
                 },
                 countries: {
-                    words: ["canada", "brazil", "egypt", "japan", "india", "france", "mexico", "russia", "china", "australia"],
+                    words: ["canada","brazil","egypt","japan","india","france","mexico","russia","china","australia"],
+                    wikiTerms: ["Canada","Brazil","Egypt","Japan","India","France","Mexico","Russia","China","Australia"],
                     hints: [
-                        "Known for maple syrup and hockey", "Largest country in South America", "Home of the pyramids and the Sphinx", "The Land of the Rising Sun", "Known for the Taj Mahal and Bollywood",
-                        "Famous for the Eiffel Tower and cuisine", "Known for its tacos and sombreros", "The largest country in the world by area", "Has a Great Wall and a massive population", "A continent and a country known for kangaroos"
+                        ["Very polite, very cold","Two languages, one peace","More lakes than anywhere else"],
+                        ["Carnival energy, jungle depth","Where the Amazon begins","Five-time world champions"],
+                        ["Sand, stone, and ancient secrets","Where rivers built empires","Pyramids predate almost everything"],
+                        ["Where the sun clocks in first","Trains arrive on the second","Cherry blossoms, brief and unforgettable"],
+                        ["A billion stories, one peninsula","Spice trade started here","Democracy's most populous chapter"],
+                        ["Romance is baked into the bread","Wine, art, and strong opinions","Boulevards built for impressions"],
+                        ["Spice, color, and ancient temples","Aztec roots run deep","Where tequila comes from"],
+                        ["So vast it spans eleven time zones","Winters that earn their reputation","Bears are more common than you'd think"],
+                        ["A wall so long it curves with the earth","Invented paper and printing","Oldest continuous civilization"],
+                        ["Upside down on the map, somehow fine","Half the wildlife wants you dead","Summer when you expect winter"]
                     ]
                 },
                 gpu: {
-                    words: ["geforce", "radeon", "nvidia", "raytracing", "shader", "tensor", "vram", "amd", "overclock", "heatsink"],
+                    words: ["geforce","radeon","nvidia","raytracing","shader","tensor","vram","amd","overclock","heatsink"],
+                    wikiTerms: ["GeForce","Radeon","Nvidia","Ray tracing (graphics)","Shader","Tensor Processing Unit","Video random-access memory","Advanced Micro Devices","Overclocking","Heat sink"],
                     hints: [
-                        "NVIDIA's main line of consumer graphics cards", "AMD's primary brand for graphics cards", "The 'green team,' known for its RTX series", "A rendering technique for hyper-realistic lighting", "A program that tells the GPU how to draw pixels",
-                        "Specialized cores used for AI and deep learning", "The dedicated memory on a graphics card", "The 'red team,' a major GPU and CPU manufacturer", "Running a component faster than its rated speed", "The metal component that dissipates warmth from the chip"
+                        ["Green team's flagship lineup","RTX is its latest chapter","Powers most rigs you've seen"],
+                        ["Red team's answer to green","RX series rings a bell","AMD's visual muscle"],
+                        ["The company, not just the chip","Green logo, GPU royalty","Also runs the world's AI now"],
+                        ["Light that knows where it came from","Reflections that cost performance","Makes glass look like glass"],
+                        ["Tiny program, massive visual impact","Runs on the GPU, not the CPU","Colors, shadows, effects — all this"],
+                        ["Silicon that thinks in numbers","AI's favorite math unit","Named after a type of matrix"],
+                        ["The card's own private memory","Filled by textures and frames","More means bigger resolutions"],
+                        ["Makes both CPUs and GPUs","Red versus green, always","Ryzen and Radeon, same family"],
+                        ["Pushing past the spec sheet","More speed, more heat","Warranty may not approve"],
+                        ["Fins and metal, no moving parts","Sits on top of the chip","Keeps things from melting"]
                     ]
                 },
                 carBrands: {
-                    words: ["toyota", "ford", "honda", "tesla", "bmw", "porsche", "ferrari", "volkswagen", "jeep", "subaru"],
+                    words: ["toyota","ford","honda","tesla","bmw","porsche","ferrari","volkswagen","jeep","subaru"],
+                    wikiTerms: ["Toyota Land Cruiser","Ford Mustang","Honda Civic","Tesla Model 3","BMW M3","Porsche 911","Ferrari 488 GTB","Volkswagen Golf","Jeep Wrangler","Subaru Outback"],
                     hints: [
-                        "A Japanese brand known for reliability and the Camry", "An American company famous for the Mustang and F-150", "Japanese manufacturer known for the Civic and Accord", "An American EV company led by Elon Musk", "German brand known as the 'Ultimate Driving Machine'",
-                        "German sports car maker famous for the 911", "Iconic Italian supercar brand with a prancing horse logo", "German for 'people's car,' makes the Golf", "American brand known for its rugged off-road vehicles", "Japanese brand known for all-wheel drive"
+                        ["Rarely breaks, rarely brags","Corolla is its everyman","Hybrid before it was cool"],
+                        ["Built tough, born American","Mustang runs in its veins","Put America on the road"],
+                        ["Reliable as a handshake","Civic is its bread and butter","Also makes motorcycles and jets"],
+                        ["Plugs in, shows off","Software updates your car overnight","Elon's most profitable side project"],
+                        ["Engineered for the road less straight","Kidney grille, always","Bavarian and proud of it"],
+                        ["Stuttgart's finest export","The 911 never got old","Sports car that somehow has a back seat"],
+                        ["Prancing horse, roaring engine","Red by reputation","Waiting list longer than you'd expect"],
+                        ["The people's choice, literally","Beetle started it all","German engineering, everyday price"],
+                        ["Prefers dirt to pavement","Wrangler waves at other Wranglers","Built when roads weren't"],
+                        ["Four wheels always working","Beloved by outdoorsy types","Symmetrical AWD, always"]
                     ]
                 },
                 phones: {
-                    words: ["iphone", "android", "samsung", "pixel", "nokia", "motorola", "oneplus", "xiaomi", "blackberry", "huawei"],
+                    words: ["iphone","android","samsung","pixel","nokia","motorola","oneplus","xiaomi","blackberry","huawei"],
+                    wikiTerms: ["IPhone","Android (operating system)","Samsung Galaxy","Pixel (smartphone)","Nokia","Motorola","OnePlus","Xiaomi","BlackBerry","Huawei"],
                     hints: [
-                        "Apple's iconic smartphone", "Google's open-source mobile operating system", "A South Korean giant known for its Galaxy series", "Google's own brand of smartphones", "A Finnish brand once famous for 'indestructible' phones",
-                        "American company that created the first mobile phone", "Known for its 'flagship killer' phones", "A major Chinese electronics brand", "Once famous for its physical keyboards and BBM", "A Chinese tech giant known for its P series phones"
+                        ["A fruit, a trillion dollars, a phone","Lightning port caused drama","One button, then none"],
+                        ["Free and open, powers most pockets","Google's OS, everyone's phone","Runs on everything, owned by no one"],
+                        ["Galaxy-branded, Korea-born","Foldables before anyone else","Makes chips for itself and rivals"],
+                        ["Search giant's hardware bet","Camera does the heavy lifting","Pure Android, straight from the source"],
+                        ["Once indestructible, now nostalgic","3310 was basically a weapon","Finnish roots, global reach"],
+                        ["Invented the call, then forgot how to style it","Razr flipped the game","The first mobile call was made here"],
+                        ["Flagship quality, budget ambition","Never settle, they said","China's challenger brand"],
+                        ["Budget king, massive scale","Mi and Redmi, same family","China's most popular phone abroad"],
+                        ["QWERTY before touchscreens took over","Corporate favourite, then forgotten","BBM was its secret weapon"],
+                        ["Banned in some places, popular in many","Kirin chips, Chinese roots","5G pioneer with controversy attached"]
                     ]
                 },
                 videoGames: {
-                    words: ["minecraft", "fortnite", "zelda", "mario", "pokemon", "roblox", "tetris", "pacman", "overwatch", "eldenring"],
+                    words: ["minecraft","fortnite","zelda","mario","pokemon","roblox","tetris","pacman","overwatch","eldenring"],
+                    wikiTerms: ["Minecraft","Fortnite","The Legend of Zelda","Mario (franchise)","Pokémon","Roblox","Tetris","Pac-Man","Overwatch (video game)","Elden Ring"],
                     hints: [
-                        "A sandbox game about placing blocks", "A popular battle royale game with a building mechanic", "Nintendo's fantasy series about the hero of Hyrule", "Nintendo's famous Italian plumber mascot", "A game about catching and training pocket monsters",
-                        "An online platform where users create and play games", "A classic puzzle game involving falling blocks", "An arcade classic about eating dots in a maze", "A team-based hero shooter from Blizzard", "A challenging open-world RPG by FromSoftware"
+                        ["Infinite world, square everything","Creeper hiss means run","Best-selling game ever made"],
+                        ["100 drop in, one flies out","Build walls mid-fight","Season passes and banana skins"],
+                        ["Triforce, not a torch","Link fights, she gets the title","Hyrule is always in danger"],
+                        ["Overalls, no explanation needed","Coins, mushrooms, and castles","Plumber who never plumbs"],
+                        ["Gotta catch 'em... you know","Red or Blue, the divide remains","Pikachu is just the mascot"],
+                        ["Kids built the game you're playing","User-made worlds, endless genres","Robux is its currency"],
+                        ["Falling shapes, rising panic","Russian origin, global obsession","There's no winning, only surviving longer"],
+                        ["Chomp or be chomped","Maze runner since 1980","Four ghosts, one yellow circle"],
+                        ["Pick your hero, guard the payload","Blizzard's team shooter","Lore heavier than the gameplay"],
+                        ["Die, learn, die again","FromSoftware's open-world opus","A novelist and a game designer made this"]
                     ]
                 }
             };
 
-            // DOM Elements
             const setupSection = document.getElementById('setup-section');
             const gameSection = document.getElementById('game-section');
             const topicSelect = document.getElementById('topic-select');
@@ -316,115 +365,112 @@
             const guessButton = document.getElementById('guess-button');
             const hintButton = document.getElementById('hint-button');
             const newGameButton = document.getElementById('new-game-button');
+            const wordImage = document.getElementById('word-image');
+            const imageOverlay = document.getElementById('image-overlay');
 
-            // Game State
-            let selectedWord = '';
-            let selectedHint = '';
+            let selectedWord = '', selectedHint = '';
             let guessedLetters = new Set();
-            let wrongGuesses = 0;
-            let timer;
-            let timeLeft = 60;
-            const HINT_PENALTY = 5;
-            const MAX_WRONG_GUESSES = 6;
+            let wrongGuesses = 0, timer, timeLeft = 60;
+            let imageSquares = [], revealedCount = 0;
+            const HINT_PENALTY = 10, MAX_WRONG_GUESSES = 6;
 
-            // Functions
+            const fetchWordImage = async (wikiTerm) => {
+                wordImage.src = '';
+                try {
+                    const res = await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(wikiTerm)}&prop=pageimages&format=json&pithumbsize=500&origin=*`);
+                    const data = await res.json();
+                    const page = data.query.pages[Object.keys(data.query.pages)[0]];
+                    if (page?.thumbnail?.source) wordImage.src = page.thumbnail.source;
+                } catch (e) {}
+            };
+
+            const setupImageGrid = (wordLength) => {
+                imageOverlay.innerHTML = '';
+                imageSquares = [];
+                revealedCount = 0;
+                const n = wordLength;
+                const cols = n <= 5 ? n : Math.ceil(n / 2);
+                const rows = Math.ceil(n / cols);
+                imageOverlay.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+                const active = [];
+                for (let i = 0; i < cols * rows; i++) {
+                    const sq = document.createElement('div');
+                    if (i < n) { sq.classList.add('overlay-sq'); active.push(sq); }
+                    else sq.style.background = 'transparent';
+                    imageOverlay.appendChild(sq);
+                }
+                for (let i = active.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [active[i], active[j]] = [active[j], active[i]];
+                }
+                imageSquares = active;
+            };
+
+            const revealSquare = () => {
+                if (revealedCount < imageSquares.length) imageSquares[revealedCount++].classList.add('revealed');
+            };
+            const revealAllSquares = () => { while (revealedCount < imageSquares.length) revealSquare(); };
+
             const startGame = () => {
                 const topicValue = topicSelect.value;
                 if (!topicValue) return;
-                
-                const topicText = topicSelect.options[topicSelect.selectedIndex].text;
-                topicDisplay.textContent = `Topic: ${topicText}`;
-
+                topicDisplay.textContent = `Topic: ${topicSelect.options[topicSelect.selectedIndex].text}`;
                 wrongGuesses = 0;
                 guessedLetters = new Set();
                 timeLeft = 60;
+                timerInfo.classList.remove('timer-warning');
                 messageDisplay.textContent = '';
-                
-                const wordList = topics[topicValue].words;
-                const hintList = topics[topicValue].hints;
-                const randomIndex = Math.floor(Math.random() * wordList.length);
-                selectedWord = wordList[randomIndex].toUpperCase();
-                selectedHint = hintList[randomIndex];
-
+                const { words, hints, wikiTerms } = topics[topicValue];
+                const i = Math.floor(Math.random() * words.length);
+                selectedWord = words[i].toUpperCase();
+                selectedHint = hints[i][Math.floor(Math.random() * hints[i].length)];
+                setupImageGrid(selectedWord.length);
+                fetchWordImage(wikiTerms[i]);
                 setupSection.classList.add('hidden');
                 gameSection.classList.remove('hidden');
-                
                 guessInput.value = '';
                 guessInput.focus();
-                
-                guessButton.disabled = false;
-                guessInput.disabled = false;
-                hintButton.disabled = false;
-
+                guessButton.disabled = guessInput.disabled = hintButton.disabled = false;
                 updateDisplay();
                 startTimer();
             };
-            
+
             const updateDisplay = () => {
-                wordDisplay.textContent = selectedWord
-                    .split('')
-                    .map(letter => (guessedLetters.has(letter) ? letter : '_'))
-                    .join(' ');
-                
+                wordDisplay.textContent = selectedWord.split('').map(l => guessedLetters.has(l) ? l : '_').join(' ');
                 hangmanStage.textContent = stages[wrongGuesses];
                 guessedLettersDisplay.textContent = `Guessed: ${[...guessedLetters].sort().join(', ')}`;
                 checkGameState();
             };
-            
+
             const handleGuess = () => {
                 const guess = guessInput.value.toUpperCase().trim();
                 guessInput.value = '';
                 messageDisplay.textContent = '';
-
                 if (!guess) return;
-
-                // Full word guess logic
                 if (guess.length > 1) {
-                    if (guess === selectedWord) {
-                        for (const letter of selectedWord) {
-                            guessedLetters.add(letter);
-                        }
-                    } else {
-                        wrongGuesses++;
-                        messageDisplay.textContent = `"${guess}" is not the word.`;
-                    }
-                // Single letter guess logic
+                    if (guess === selectedWord) { for (const l of selectedWord) guessedLetters.add(l); }
+                    else { wrongGuesses++; messageDisplay.textContent = `"${guess}" is not the word.`; }
                 } else {
-                    if (!/^[A-Z]$/.test(guess)) {
-                        messageDisplay.textContent = 'Please enter a valid letter.';
-                        return;
-                    }
-                    if (guessedLetters.has(guess)) {
-                        messageDisplay.textContent = `You've already guessed "${guess}".`;
-                        return;
-                    }
+                    if (!/^[A-Z]$/.test(guess)) { messageDisplay.textContent = 'Please enter a valid letter.'; return; }
+                    if (guessedLetters.has(guess)) { messageDisplay.textContent = `You've already guessed "${guess}".`; return; }
                     guessedLetters.add(guess);
-                    if (!selectedWord.includes(guess)) {
-                        wrongGuesses++;
-                    }
+                    if (selectedWord.includes(guess)) revealSquare(); else wrongGuesses++;
                 }
                 updateDisplay();
             };
 
             const checkGameState = () => {
-                if (!wordDisplay.textContent.includes('_')) {
-                    endGame('Congratulations! You won! 🎉');
-                }
-                else if (wrongGuesses >= MAX_WRONG_GUESSES) {
-                    endGame(`Game over! The word was "${selectedWord}". 😔`);
-                }
+                if (!wordDisplay.textContent.includes('_')) endGame('Congratulations! You won! 🎉', true);
+                else if (wrongGuesses >= MAX_WRONG_GUESSES) endGame(`Game over! The word was "${selectedWord}". 😔`, false);
             };
 
             const startTimer = () => {
-                clearInterval(timer); 
+                clearInterval(timer);
                 timerInfo.textContent = `Time Left: ${timeLeft}s`;
                 timer = setInterval(() => {
-                    timeLeft--;
-                    timerInfo.textContent = `Time Left: ${timeLeft}s`;
-                    if (timeLeft <= 0) {
-                        clearInterval(timer);
-                        endGame(`Time's up! The word was "${selectedWord}". ⏱️`);
-                    }
+                    timerInfo.textContent = `Time Left: ${--timeLeft}s`;
+                    if (timeLeft <= 30) timerInfo.classList.add('timer-warning');
+                    if (timeLeft <= 0) { clearInterval(timer); endGame(`Time's up! The word was "${selectedWord}". ⏱️`, false); }
                 }, 1000);
             };
 
@@ -434,34 +480,27 @@
                     timerInfo.textContent = `Time Left: ${timeLeft}s`;
                     messageDisplay.textContent = `Hint: ${selectedHint}`;
                     hintButton.disabled = true;
-                } else {
-                    messageDisplay.textContent = 'Not enough time for a hint!';
-                }
+                } else { messageDisplay.textContent = 'Not enough time for a hint!'; }
             };
 
-            const endGame = (message) => {
+            const endGame = (message, isWin) => {
                 clearInterval(timer);
+                if (isWin) revealAllSquares();
                 messageDisplay.textContent = message;
                 wordDisplay.textContent = selectedWord.split('').join(' ');
-                guessButton.disabled = true;
-                guessInput.disabled = true;
-                hintButton.disabled = true;
+                guessButton.disabled = guessInput.disabled = hintButton.disabled = true;
             };
-            
+
             const resetToMenu = () => {
                 clearInterval(timer);
                 gameSection.classList.add('hidden');
                 setupSection.classList.remove('hidden');
-                topicSelect.value = "";
-                topicDisplay.textContent = "";
+                topicSelect.value = topicDisplay.textContent = '';
             };
 
-            // Event Listeners
             topicSelect.addEventListener('change', startGame);
             guessButton.addEventListener('click', handleGuess);
-            guessInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') handleGuess();
-            });
+            guessInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleGuess(); });
             hintButton.addEventListener('click', showHint);
             newGameButton.addEventListener('click', resetToMenu);
         });
