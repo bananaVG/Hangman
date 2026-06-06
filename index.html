@@ -338,7 +338,7 @@
                 },
                 countries: {
                     words: ["canada", "brazil", "egypt", "japan", "india", "france", "mexico", "russia", "china", "australia"],
-                    wikiTerms: ["Canada", "Brazil", "Egypt", "Japan", "India", "France", "Mexico", "Russia", "China", "Australia"],
+                    wikiTerms: ["Canadian Rockies", "Christ the Redeemer", "Great Pyramid of Giza", "Mount Fuji", "Taj Mahal", "Eiffel Tower", "Chichen Itza", "Saint Basil's Cathedral", "Great Wall of China", "Sydney Opera House"],
                     hints: [
                         ["Very polite, very cold", "Two languages, one peace", "More lakes than anywhere else"],
                         ["Carnival energy, jungle depth", "Where the Amazon begins", "Five-time world champions"],
@@ -354,7 +354,7 @@
                 },
                 gpu: {
                     words: ["geforce", "radeon", "nvidia", "raytracing", "shader", "tensor", "vram", "amd", "overclock", "heatsink"],
-                    wikiTerms: ["GeForce", "Radeon", "Nvidia", "Ray tracing (graphics)", "Shader", "Tensor Processing Unit", "Video random-access memory", "Advanced Micro Devices", "Overclocking", "Heat sink"],
+                    wikiTerms: ["GeForce RTX 40 series", "Radeon", "GeForce RTX 30 series", "Ray tracing (graphics)", "Shader", "Tensor Processing Unit", "Video random-access memory", "Ryzen", "Overclocking", "Heat sink"],
                     hints: [
                         ["Green team's flagship lineup", "RTX is its latest chapter", "Powers most rigs you've seen"],
                         ["Red team's answer to green", "RX series rings a bell", "AMD's visual muscle"],
@@ -386,7 +386,7 @@
                 },
                 phones: {
                     words: ["iphone", "android", "samsung", "pixel", "nokia", "motorola", "oneplus", "xiaomi", "blackberry", "huawei"],
-                    wikiTerms: ["IPhone", "Android (operating system)", "Samsung Galaxy", "Pixel (smartphone)", "Nokia", "Motorola", "OnePlus", "Xiaomi", "BlackBerry", "Huawei"],
+                    wikiTerms: ["IPhone 15", "Android (operating system)", "Samsung Galaxy S24", "Pixel 4", "Nokia 3310 (2017)", "Motorola Razr", "OnePlus Nord", "Xiaomi 14", "BlackBerry Classic", "Huawei P10"],
                     hints: [
                         ["A fruit, a trillion dollars, a phone", "Lightning port caused drama", "One button, then none"],
                         ["Free and open, powers most pockets", "Google's OS, everyone's phone", "Runs on everything, owned by no one"],
@@ -402,7 +402,18 @@
                 },
                 videoGames: {
                     words: ["minecraft", "fortnite", "zelda", "mario", "pokemon", "roblox", "tetris", "pacman", "overwatch", "eldenring"],
-                    wikiTerms: ["Minecraft", "Fortnite", "The Legend of Zelda", "Mario (franchise)", "Pokémon", "Roblox", "Tetris", "Pac-Man", "Overwatch (video game)", "Elden Ring"],
+                    wikiTerms: [
+                        "Sandbox game",
+                        "https://img.youtube.com/vi/e4sCLYMSokg/maxresdefault.jpg",
+                        "The Legend of Zelda",
+                        "Mario (franchise)",
+                        "Pokémon",
+                        "https://upload.wikimedia.org/wikipedia/commons/4/4b/Roblox_Logo_2022.svg",
+                        "Tetris",
+                        "Pac-Man (character)",
+                        "Hero shooter",
+                        "https://upload.wikimedia.org/wikipedia/commons/a/ac/ELDEN_RING_Ming-Na_Wen_01.png"
+                    ],
                     hints: [
                         ["Infinite world, square everything", "Creeper hiss means run", "Best-selling game ever made"],
                         ["100 drop in, one flies out", "Build walls mid-fight", "Season passes and banana skins"],
@@ -466,6 +477,11 @@
             // Image grid functions
             const fetchWordImage = async (wikiTerm) => {
                 wordImage.src = '';
+                // Direct URL — use it immediately without hitting the API
+                if (wikiTerm.startsWith('http')) {
+                    wordImage.src = wikiTerm;
+                    return;
+                }
                 try {
                     const res = await fetch(
                         `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(wikiTerm)}&prop=pageimages&format=json&pithumbsize=500&origin=*`
