@@ -157,25 +157,7 @@
             height: 100%;
             object-fit: cover;
             display: block;
-        }
-        #image-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: grid;
-        }
-        .overlay-sq {
-            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-            border: 1.5px solid rgba(255, 255, 255, 0.12);
-            transition: opacity 0.45s ease, transform 0.45s ease;
-            transform-origin: center;
-        }
-        .overlay-sq.revealed {
-            opacity: 0;
-            transform: scale(0.05);
-            pointer-events: none;
+            transition: filter 0.55s ease;
         }
 
         /* Timer warning */
@@ -214,7 +196,6 @@
 
             <div id="image-section">
                 <img id="word-image" src="" alt="">
-                <div id="image-overlay"></div>
             </div>
 
             <div id="timer-info"></div>
@@ -444,7 +425,6 @@
             const hintButton = document.getElementById('hint-button');
             const newGameButton = document.getElementById('new-game-button');
             const wordImage = document.getElementById('word-image');
-            const imageOverlay = document.getElementById('image-overlay');
 
             // Game State
             let selectedWord = '';
@@ -456,9 +436,10 @@
             const HINT_PENALTY = 10;
             const MAX_WRONG_GUESSES = 6;
 
-            // Image reveal state
-            let imageSquares = [];
-            let revealedCount = 0;
+            // Image blur state
+            let correctGuessCount = 0;
+            let totalUniqueLetters = 0;
+            const MAX_BLUR = 18; // px — fully unrecognisable at game start
 
             // Shuffled word queues — ensures all words play before any repeats
             const wordQueues = {};
@@ -474,7 +455,7 @@
                 return wordQueues[topicValue].pop();
             };
 
-            // Image grid functions
+            // Image blur functions
             const fetchWordImage = async (wikiTerm) => {
                 wordImage.src = '';
                 // Direct URL — use it immediately without hitting the API
@@ -493,49 +474,20 @@
                 } catch (e) { /* placeholder stays */ }
             };
 
-            const setupImageGrid = (wordLength) => {
-                imageOverlay.innerHTML = '';
-                imageSquares = [];
-                revealedCount = 0;
-
-                const n = wordLength;
-                const cols = n <= 5 ? n : Math.ceil(n / 2);
-                const rows = Math.ceil(n / cols);
-                const totalCells = cols * rows;
-
-                imageOverlay.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-
-                const active = [];
-                for (let i = 0; i < totalCells; i++) {
-                    const sq = document.createElement('div');
-                    if (i < n) {
-                        sq.classList.add('overlay-sq');
-                        active.push(sq);
-                    } else {
-                        sq.style.background = 'transparent';
-                    }
-                    imageOverlay.appendChild(sq);
-                }
-
-                // Fisher-Yates shuffle for random reveal order
-                for (let i = active.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [active[i], active[j]] = [active[j], active[i]];
-                }
-                imageSquares = active;
+            const setupImageBlur = (word) => {
+                correctGuessCount = 0;
+                totalUniqueLetters = new Set(word.replace(/ /g, '')).size;
+                wordImage.style.filter = `blur(${MAX_BLUR}px)`;
             };
 
-            const revealSquare = () => {
-                if (revealedCount < imageSquares.length) {
-                    imageSquares[revealedCount].classList.add('revealed');
-                    revealedCount++;
-                }
+            const revealBlurStep = () => {
+                correctGuessCount = Math.min(correctGuessCount + 1, totalUniqueLetters);
+                const blurAmount = MAX_BLUR * (1 - correctGuessCount / totalUniqueLetters);
+                wordImage.style.filter = `blur(${Math.max(0, blurAmount).toFixed(1)}px)`;
             };
 
-            const revealAllSquares = () => {
-                while (revealedCount < imageSquares.length) {
-                    revealSquare();
-                }
+            const revealAllBlur = () => {
+                wordImage.style.filter = 'blur(0px)';
             };
 
             // Game functions
@@ -560,7 +512,7 @@
                 const hintPool = hintList[randomIndex];
                 selectedHint = hintPool[Math.floor(Math.random() * hintPool.length)];
 
-                setupImageGrid(selectedWord.length);
+                setupImageBlur(selectedWord);
                 fetchWordImage(wikiTerms[randomIndex]);
 
                 setupSection.classList.add('hidden');
@@ -617,7 +569,7 @@
                     }
                     guessedLetters.add(guess);
                     if (selectedWord.includes(guess)) {
-                        revealSquare();
+                        revealBlurStep();
                     } else {
                         wrongGuesses++;
                     }
@@ -660,7 +612,7 @@
 
             const endGame = (message, isWin) => {
                 clearInterval(timer);
-                if (isWin) revealAllSquares();
+                if (isWin) revealAllBlur();
                 messageDisplay.textContent = message;
                 wordDisplay.textContent = selectedWord.split('').join(' ');
                 guessButton.disabled = true;
